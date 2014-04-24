@@ -1,4 +1,4 @@
-# xmitmsg (http://travis-ci.org/glv/smithereen)
+# xmitmsg
 
 xmitmsg is a library and function for presenting enumerated messages.
 It follows the rationale and source format of IBM VM/CMS 'XMITMSG'
