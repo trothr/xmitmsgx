@@ -1,0 +1,21 @@
+In the early 1990s, I wrote a Gopher client and server for VM/CMS.
+This was in the pre-dawn of the World Wide Web and Gopher was hot.
+CMS Gopher was well received and I got all kinds of enhancement requests.
+One biggie: use a message repository. Really? But the community
+kept up the pressure, so I bowed. Turned out that 'XMITMSG' in CMS was
+easy to use. Shortly, message repositories for other languages were
+provided and CMS Gopher was the only multi-language Gopher on the planet.
+
+I came to love 'XMITMSG' and wanted something like it for Unix.
+To fill the need, I put together a crude C program that could read
+the same syntax as the CMS message repository. The command worked
+much like its CMS counterpart (but with Unix option syntax, of course).
+But I had a lot to learn about making things extensible and functional.
+
+In 2013, the GitHub guys offered a free intro to Git at Ohio State.
+I took it and started tinkering with collaborative projects.
+In 2014, I created this 'xmitmsg' project.
+
+-- Rick Troth, 2017 Thanksgiving; <><
+
+
