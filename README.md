@@ -1,8 +1,9 @@
 # xmitmsg
 
-xmitmsg is a library and function for presenting enumerated messages.
-It follows the rationale and source format of IBM VM/CMS 'XMITMSG'
-except that the message repository does not have to be pre-processed.
+`xmitmsg` is a library and program for presenting enumerated messages.
+The command works similarly to that of IBM VM/CMS 'XMITMSG', with Unix
+option syntax rather than CMS. The message file source format is the same
+as that of CMS except it does not have to be pre-processed.
 
 ## Rationale
 
@@ -10,6 +11,15 @@ Application messages in context can be referenced by number.
 The text of the message can be made available in any local language.
 Tokens, for lack of a better term, can be inserted into the message 
 with correct placement.
+
+This is suitable for
+
+* error messages
+* non-error status messages
+* logging, reporting
+* decorations: button labels, title bars, field identifiers
+
+anything textual intended for human consumption.
 
 ## Example
 
