@@ -25,6 +25,8 @@ and the anchor for its operation is MSTSTRUCT.
 
 `msglen` is the size of the buffer pointed to by `msgbuf`.
 
+Upon return, `msgmake()` will have put the length of the message in this field.
+
 ## Optional Supplied by Caller
 
 * msglevel
