@@ -1,9 +1,9 @@
 # xmitmsgx
 
-`xmitmsgx` is a library and `xmitmsg` is program for presenting enumerated messages.
-The command works similarly to that of IBM VM/CMS 'XMITMSG', with Unix syntax 
-rather than CMS. The message file source format is the same as that of CMS 
-except it does not have to be pre-processed.
+`xmitmsgx` is a library and `xmitmsg` is program for presenting
+enumerated messages. The command works similarly to that of IBM VM/CMS
+'XMITMSG' but with Unix syntax rather than CMS. The message file source
+format is the same as that of CMS except it does not have to be pre-processed.
 
 ## Rationale
 
@@ -38,5 +38,6 @@ So message 1234 would be coded in the message file as:
 
     1234    E recipe for target '&1' failed
 
+"E" because this is an error condition.
 
 
