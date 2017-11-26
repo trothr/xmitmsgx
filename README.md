@@ -1,9 +1,9 @@
-# xmitmsg
+# xmitmsgx
 
-`xmitmsg` is a library and program for presenting enumerated messages.
-The command works similarly to that of IBM VM/CMS 'XMITMSG', with Unix
-option syntax rather than CMS. The message file source format is the same
-as that of CMS except it does not have to be pre-processed.
+`xmitmsgx` is a library and `xmitmsg` is program for presenting enumerated messages.
+The command works similarly to that of IBM VM/CMS 'XMITMSG', with Unix syntax 
+rather than CMS. The message file source format is the same as that of CMS 
+except it does not have to be pre-processed.
 
 ## Rationale
 
@@ -34,9 +34,9 @@ Here, "stty.rel" varies so is represented by a token.
 It also moves within the message to accommodate the language.
 So message 1234 would be coded in the message file as:
 
-    fallo en las instrucciones para el objetivo '&1'
+    1234    E fallo en las instrucciones para el objetivo '&1'
 
-    recipe for target '&1' failed
+    1234    E recipe for target '&1' failed
 
 
 
