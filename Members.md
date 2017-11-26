@@ -1,9 +1,9 @@
-## MSGSTRUCT Members
+# MSGSTRUCT Members
 
 The central function in the library is `msgmake()`
 and the anchor for its operation is MSTSTRUCT.
 
-# Required Supplied by Caller
+## Required Supplied by Caller
 
 * msgnum
 
@@ -25,7 +25,7 @@ and the anchor for its operation is MSTSTRUCT.
 
 `msglen` is the size of the buffer pointed to by `msgbuf`.
 
-# Optional Supplied by Caller
+## Optional Supplied by Caller
 
 * msglevel
 
