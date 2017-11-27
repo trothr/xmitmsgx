@@ -26,11 +26,11 @@
 #define  MSGFLAG_NOPRINT  0x04
 
 
+/* Open the messages file, read it, get ready for service. */
 extern int msgopen(const char*,int,struct MSGSTRUCT*);
-/* filename, flags, optional MSGSTRUCT */
-/* specify a syslog ident via applid in optional MSGSTRUCT */
+/* filename, flags, MSGSTRUCT */
+/* Specify a syslog ident via applid in MSGSTRUCT. */
 /* specify a syslog facility via optional MSGSTRUCT */
-/* on CMS it might do a 'SET LANG' to load the messages file */
 
 /* this is the heart of the utility */
 extern int msgmake(struct MSGSTRUCT*);
@@ -54,15 +54,17 @@ typedef struct MSGSTRUCT
     int  msgline;       /* message line number (for future use, zero means all) */
     int  msglevel;      /* message level/serverity (zero means use the letter in the file) */
 
-    char *applid;       /* default is basename of messages file */
+    char *applid;       /* default is basename of messages file, optional SYSLOG identity */
     char *caller;       /* default is getenv("LOGNAME") roughly, msgu */
     char *prefix;       /* default is applid[0..2]||caller[0..2] */
     char *letter;       /* default taken from message file */
 
     /* the following are filled in by msgopen() not for user */
     int  msgmax;        /* highest message number in table */
-    char **msgtable;
-    char *msgdata,;
+    char **msgtable;    /* array of messages (allocated memory) */
+    char *msgdata;      /* messages file content (allocated memory) */
+    char *msgfile;      /* name of message file found (for debugging) */
+
     char  pfxa[4];      /* truncated up-cased applid */
     char  pfxc[4];      /* truncated up-cased caller */
     char  locale[24];   /* possibly truncated to match the nearest file found */
