@@ -46,4 +46,6 @@ the recipe processor "RCP", the resulting message might look like:
 
     MAKRCP1234E recipe for target 'stty.rel' failed
 
+The message code MAKRCP1234E can be used for reference
+even if the local language is neither English nor Spanish.
 
