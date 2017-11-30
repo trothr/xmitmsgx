@@ -25,7 +25,7 @@ and the anchor for its operation is MSTSTRUCT.
 
 `msglen` is the size of the buffer pointed to by `msgbuf`.
 
-Upon return, `msgmake()` will have put the length of the message in this field.
+Upon return, `msgmake()` will have put the length of the resulting message into this field.
 
 ## Optional Supplied by Caller
 
@@ -36,8 +36,5 @@ Upon return, `msgmake()` will have put the length of the message in this field.
 
 A default of zero instructs `msgmake()` to use the message severity letter.
 Zero collides with SYSLOG "panic". This is intentional.
-
-
-
 
 
