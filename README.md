@@ -39,5 +39,11 @@ So message 1234 would be coded in the message file as:
     1234    E recipe for target '&1' failed
 
 "E" because this is an error condition.
+Using an application ID of "MAK" and a caller tag representing
+the recipe processor "RCP", the resulting message might look like:
+
+    MAKRCP1234E fallo en las instrucciones para el objetivo 'stty.rel'
+
+    MAKRCP1234E recipe for target 'stty.rel' failed
 
 
