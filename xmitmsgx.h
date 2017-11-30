@@ -63,7 +63,7 @@ typedef struct MSGSTRUCT
 
 /* Open the messages file, read it, get ready for service. */
 extern int msgopen(const char*,int,struct MSGSTRUCT*);
-/* filename, flags, MSGSTRUCT */
+/* filename, opts, MSGSTRUCT */
 /* Specify a syslog ident via applid in MSGSTRUCT. */
 /* specify a syslog facility via optional MSGSTRUCT */
 
@@ -71,8 +71,14 @@ extern int msgopen(const char*,int,struct MSGSTRUCT*);
 extern int msgmake(struct MSGSTRUCT*);
 
 /* follows snprintf() */
-extern int msgprint(int,int,char**,int);
-/* msgnum, msgc, msgv, flag */
+extern int msgprint(int,int,char**,int,struct MSGSTRUCT*);
+/* msgnum, msgc, msgv, opts */
+
+extern int mstwrite(int,int,int,char**,int,struct MSGSTRUCT*);
+/* fd, msgnum, msgc, msgv, opts */
+
+extern int msgstring(char*,int,int,int,char**,struct MSGSTRUCT*);
+/* output, outlen, msgnum, msgc, msgv */
 
 extern int msgclose(struct MSGSTRUCT*);
 
