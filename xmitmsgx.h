@@ -22,8 +22,9 @@
 
 /* the following are used by derivative functions, not by msgmake() itself */
 #define  MSGFLAG_SYSLOG   0x01
-#define  MSGFLAG_NOCODE   0x02
-#define  MSGFLAG_NOPRINT  0x04
+#define  MSGFLAG_NOLOG    0x02
+#define  MSGFLAG_NOCODE   0x04
+#define  MSGFLAG_NOPRINT  0x08
 
 
 typedef struct MSGSTRUCT
