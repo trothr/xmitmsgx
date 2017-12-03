@@ -18,7 +18,7 @@
 #define  MSGLEVEL_ERROR     'E'  /* SYSLOG 3 */
 #define  MSGLEVEL_SEVERE    'S'  /* SYSLOG 2 CRIT */
 #define  MSGLEVEL_TERMINAL  'T'  /* SYSLOG 1 ALERT */
-/*               _EMERG             SYSLOG 0 */
+/*               _EMERG             SYSLOG 0 reserved */
 
 /* the following are used by derivative functions, not by msgmake() itself */
 #define  MSGFLAG_SYSLOG   0x01
@@ -39,6 +39,7 @@ typedef struct MSGSTRUCT
     int  msgfmt;        /* message format number (for future use) */
     int  msgline;       /* message line number (for future use, zero means all) */
     int  msglevel;      /* message level/serverity (zero means use the letter in the file) */
+    int  msgopts;       /* set by msgopen(), sometimes overridden for msgmake() */
 
     /* the following are probably not for external use */
     char *applid;       /* default is basename of messages file, optional SYSLOG identity */
@@ -51,13 +52,11 @@ typedef struct MSGSTRUCT
     char **msgtable;    /* array of messages (allocated memory) */
     char *msgdata;      /* messages file content (allocated memory) */
     char *msgfile;      /* name of message file found (for debugging) */
-
-    char  pfxa[4];      /* truncated up-cased applid */
-    char  pfxc[4];      /* truncated up-cased caller */
-    char  locale[24];   /* possibly truncated to match the nearest file found */
-
-    int  msgopts;
     char *escape;
+
+    char  pfxmaj[4];    /* truncated up-cased applid */
+    char  pfxmin[4];    /* truncated up-cased caller */
+    char  locale[24];   /* possibly truncated to match the nearest file found */
 
   } MSGSTRUCT;
 
