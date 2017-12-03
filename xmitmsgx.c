@@ -24,7 +24,6 @@ struct MSGSTRUCT *msglobal = NULL, msstatic;
 /* ---------------------------------------------------------------- OPEN
  * Open the messages file, read it, get ready for service.
  * Returns: zero upon successful operation
- * Specify a syslog ident via applid in MSGSTRUCT.
  * The VM/CMS counterpart does 'SET LANG' to load the messages file.
  */
 int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
@@ -52,13 +51,14 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     /* look for the message repository */
     ms->msgfile = NULL;
     (void) memset(ms->locale,0x00,sizeof(ms->locale));
+    (void) memset(ms->applid,0x00,sizeof(ms->applid));
     (void) strncpy(filename,file,sizeof(filename)-1);
     filename[sizeof(filename)-1] = 0x00;
     rc = stat(filename,&statbuf);
 
     /* if that didn't work then try LANG environment variable */
     if (rc != 0) {
-      (void) snprintf(ms->locale,sizeof(ms->locale)-1,getenv("LANG"));
+      (void) strncpy(ms->locale,getenv("LANG"),sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
@@ -72,7 +72,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
 
     /* if that didn't work then try LC_CTYPE environment variable */
     if (rc != 0) {
-      (void) snprintf(ms->locale,sizeof(ms->locale)-1,getenv("LC_CTYPE"));
+      (void) strncpy(ms->locale,getenv("LC_CTYPE"),sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
@@ -86,7 +86,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
 
     /* if that didn't work then try LOCALE environment variable */
     if (rc != 0) {
-      (void) snprintf(ms->locale,sizeof(ms->locale)-1,getenv("LOCALE"));
+      (void) strncpy(ms->locale,getenv("LOCALE"),sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
@@ -107,7 +107,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     ms->msgdata = malloc(memsize);
     if (ms->msgdata == NULL) { if (errno != 0) return errno; else return ENOMEM; }
 
-    /* open the file */
+    /* open the message repository */
     rc = fd = open(filename,O_RDONLY);
     if (rc < 0) {
       (void) free(ms->msgdata);
@@ -160,17 +160,34 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
       }
 
 
+    /* FIXME: write xmsgbase() and use it instead */
+    p = (char*) basename(ms->msgfile);
+    (void) strncpy(ms->applid,p,sizeof(ms->applid)-1);
+    p = ms->applid;
+    while (*p != 0x00 && *p != '.') p++; *p = 0x00;
+
+
     /* FIXME */
     (void) sprintf(ms->pfxmaj,"TST");
     (void) sprintf(ms->pfxmin,"MSG");
+    p = ms->applid;
+    for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmaj[i] = toupper(*p++);
+    ms->pfxmaj[i] = 0x00;
+    for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmin[i] = toupper(*p++);
+    ms->pfxmin[i] = 0x00;
 
 
     /* handle SYSLOG and record other options */
     ms->msgopts = opts;
     if (ms->msgopts & MSGFLAG_SYSLOG) {
       /* figure out syslog identity */
-      openlog("fixme",LOG_PID,LOG_USER);
+      openlog(ms->applid,LOG_PID,LOG_USER);
       }
+
+/*
+    char *caller;
+    char *prefix;
+ */
 
     /* force clear other elements of the struct */
     ms->msgnum = 0;
@@ -178,7 +195,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     ms->msgbuf = NULL;   ms->msglen = 0;   ms->msgtext = NULL;
 
     ms->msglevel = 0;
-    ms->msgfmt = 0;   ms->msgline = 0;
+    ms->msgfmt = 0;   ms->msgline = 0;   /* neither implemented */
     ms->letter = NULL;
 
     /* return success */
@@ -202,7 +219,6 @@ int msgmake(struct MSGSTRUCT*ms)
 /* (void) printf("msgmake() msgnum %d\n",ms->msgnum); */
     /* NULL pointer indicates an undefined message */
     if (ms->msgtable[ms->msgnum] == NULL) return ENOENT;   /* no entry */
-
 
 
     p = ms->letter = ms->msgtable[ms->msgnum];
@@ -244,7 +260,6 @@ int msgmake(struct MSGSTRUCT*ms)
     ms->msglen = i;
 
 
-
     /* optional syslogging */
     if (ms->msgopts & MSGFLAG_SYSLOG) {
       if (ms->msglevel == 0) {
@@ -262,7 +277,6 @@ int msgmake(struct MSGSTRUCT*ms)
                            } }
 
                                       }
-
 
     /* reset transient elements of the struct */
 /*
@@ -397,31 +411,11 @@ int msgclose(struct MSGSTRUCT*ms)
     if (ms->msgtable != NULL) (void) free(ms->msgtable);
     if (ms->msgopts & MSGFLAG_SYSLOG) closelog();
 
+    (void) memset(ms->pfxmaj,0x00,sizeof(ms->pfxmaj));
+    (void) memset(ms->pfxmin,0x00,sizeof(ms->pfxmin));
+    (void) memset(ms->locale,0x00,sizeof(ms->locale));
+
     return 0;
   }
-
-/*
-
-LOG_KERN
-LOG_USER
-LOG_MAIL
-LOG_NEWS
-LOG_UUCP
-LOG_DAEMON
-LOG_AUTH
-LOG_CRON
-LOG_LPR
-
-LOG_LOCAL0
-LOG_LOCAL1
-LOG_LOCAL2
-LOG_LOCAL3
-LOG_LOCAL4
-LOG_LOCAL5
-LOG_LOCAL6
-LOG_LOCAL7
-
-/usr/include/sys/syslog.h
- */
 
 

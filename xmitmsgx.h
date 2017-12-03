@@ -32,8 +32,8 @@ typedef struct MSGSTRUCT
     int  msgnum;        /* message number */
     int  msgc;          /* count of replacement tokens */
     char **msgv;        /* vector of replacement tokens */
-    unsigned char *msgbuf;   /* supplied by caller */
-    int  msglen;        /* buffer size on input, msg length on return */
+    unsigned char *msgbuf;   /* buffer supplied by caller */
+    int  msglen;        /* buffer size on input, msg size on return */
     unsigned char *msgtext;   /* offset past msg code/header */
 
     int  msgfmt;        /* message format number (for future use) */
@@ -42,7 +42,6 @@ typedef struct MSGSTRUCT
     int  msgopts;       /* set by msgopen(), sometimes overridden for msgmake() */
 
     /* the following are probably not for external use */
-    char *applid;       /* default is basename of messages file, optional SYSLOG identity */
     char *caller;       /* default is getenv("LOGNAME") roughly, msgu */
     char *prefix;       /* default is applid[0..2]||caller[0..2] */
     char *letter;       /* default taken from message file */
@@ -57,6 +56,7 @@ typedef struct MSGSTRUCT
     char  pfxmaj[4];    /* truncated up-cased applid */
     char  pfxmin[4];    /* truncated up-cased caller */
     char  locale[24];   /* possibly truncated to match the nearest file found */
+    char  applid[16];   /* default is basename of messages file, used as SYSLOG identity */
 
   } MSGSTRUCT;
 
