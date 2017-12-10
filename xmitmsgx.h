@@ -11,14 +11,14 @@
 #ifndef _XMITMSG_H
 #define _XMITMSG_H
 
-/*               _DEBUG             SYSLOG 7 */
+/*       MSGLEVEL_DEBUG             SYSLOG 7 */
 #define  MSGLEVEL_INFO      'I'  /* SYSLOG 6 */
 #define  MSGLEVEL_REPLY     'R'  /* SYSLOG 5 NOTICE */
 #define  MSGLEVEL_WARNING   'W'  /* SYSLOG 4 */
 #define  MSGLEVEL_ERROR     'E'  /* SYSLOG 3 */
 #define  MSGLEVEL_SEVERE    'S'  /* SYSLOG 2 CRIT */
 #define  MSGLEVEL_TERMINAL  'T'  /* SYSLOG 1 ALERT */
-/*               _EMERG             SYSLOG 0 reserved */
+/*       MSGLEVEL_EMERG             SYSLOG 0 reserved */
 
 /* the following are used by derivative functions, not by msgmake() itself */
 #define  MSGFLAG_SYSLOG   0x01
@@ -53,8 +53,8 @@ typedef struct MSGSTRUCT
     char *msgfile;      /* name of message file found (for debugging) */
     char *escape;
 
-    char  pfxmaj[4];    /* truncated up-cased applid */
-    char  pfxmin[4];    /* truncated up-cased caller */
+    char  pfxmaj[4];    /* truncated up-cased applid/major */
+    char  pfxmin[4];    /* truncated up-cased caller/minor */
     char  locale[24];   /* possibly truncated to match the nearest file found */
     char  applid[16];   /* default is basename of messages file, used as SYSLOG identity */
 
@@ -67,19 +67,22 @@ extern int msgopen(const char*,int,struct MSGSTRUCT*);
 /* Specify a syslog ident via applid in MSGSTRUCT. */
 /* specify a syslog facility via optional MSGSTRUCT */
 
-/* this is the heart of the utility */
+/* This is the heart of the utility. */
 extern int msgmake(struct MSGSTRUCT*);
 
-/* follows snprintf() */
+/* Print to stdout or stderr depending on level, optionally syslog. */
 extern int msgprint(int,int,char**,int,struct MSGSTRUCT*);
 /* msgnum, msgc, msgv, opts */
 
+/* Write to file descriptor, optionally syslog. */
 extern int mstwrite(int,int,int,char**,int,struct MSGSTRUCT*);
 /* fd, msgnum, msgc, msgv, opts */
 
+/* Generate a message and store it as a string. */
 extern int msgstring(char*,int,int,int,char**,struct MSGSTRUCT*);
 /* output, outlen, msgnum, msgc, msgv */
 
+/* Clear the message repository struct. */
 extern int msgclose(struct MSGSTRUCT*);
 
 #endif

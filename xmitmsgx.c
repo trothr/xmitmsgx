@@ -264,14 +264,14 @@ int msgmake(struct MSGSTRUCT*ms)
     if (ms->msgopts & MSGFLAG_SYSLOG) {
       if (ms->msglevel == 0) {
         switch (*ms->letter) {
-/*                   _DEBUG:                    LOG_DEBUG         7 */
+/*           MSGLEVEL_DEBUG:                    LOG_DEBUG         7 */
         case MSGLEVEL_INFO:      ms->msglevel = LOG_INFO;     /* I6 */ break;
         case MSGLEVEL_REPLY:     ms->msglevel = LOG_NOTICE;   /* R5 */ break;
         case MSGLEVEL_WARNING:   ms->msglevel = LOG_WARNING;  /* W4 */ break;
         case MSGLEVEL_ERROR:     ms->msglevel = LOG_ERR;      /* E3 */ break;
         case MSGLEVEL_SEVERE:    ms->msglevel = LOG_CRIT;     /* S2 */ break;
         case MSGLEVEL_TERMINAL:  ms->msglevel = LOG_ALERT;    /* T1 */ break;
-/*                   _EMERG:                    LOG_EMERG         0 */
+/*           MSGLEVEL_EMERG:                    LOG_EMERG         0 */
 /*                                              INTERNAL_NOPRI      */
         default:                 ms->msglevel = LOG_INFO;              break;
                            } }
@@ -371,8 +371,7 @@ int msgwrite(int fd,int msgnum,int msgc,char*msgv[],int msgopts,struct MSGSTRUCT
  * Build the message and put it into a string buffer. No newline.
  * Returns: number of bytes in string, negative indicates error
  */
-int msgstring(char*output,int outlen,
-              int msgnum,int msgc,char*msgv[],struct MSGSTRUCT*ms)
+int msgstring(char*output,int outlen,int msgnum,int msgc,char*msgv[],struct MSGSTRUCT*ms)
   {
     int  rc;
     struct MSGSTRUCT ts;
