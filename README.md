@@ -2,8 +2,10 @@
 
 `xmitmsgx` is a library and `xmitmsg` is program for presenting
 enumerated messages. The command works similarly to that of IBM VM/CMS
-'XMITMSG' but with Unix syntax rather than CMS. The message file source
-format is the same as that of CMS except it does not have to be pre-processed.
+'XMITMSG' but with Unix syntax (dashed options before positional arguments) 
+rather than CMS syntax (positional args, open paren, then options). 
+The message file source format is the same as that of CMS 
+except it does not have to be pre-processed.
 
 ## Rationale
 
@@ -48,4 +50,5 @@ the recipe processor "RCP", the resulting message might look like:
 
 The message code MAKRCP1234E can be used for reference
 even if the local language is neither English nor Spanish.
+
 
