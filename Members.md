@@ -11,7 +11,7 @@ and the anchor for its operation is MSTSTRUCT.
 
 * msgc
 
-`msgc` is an integer indicating the number of replacement tokens, if any.
+`msgc` is an integer indicating the number of replacement tokens, zero if none.
 
 * msgv
 
@@ -19,7 +19,7 @@ and the anchor for its operation is MSTSTRUCT.
 
 * msgbuf
 
-`msgbuf` is a poiter to a buffer which will hold the resulting message string.
+`msgbuf` is a pointer to a buffer which will hold the resulting message string.
 
 * msglen
 
@@ -31,10 +31,8 @@ Upon return, `msgmake()` will have put the length of the resulting message into 
 
 * msglevel
 
-`msglevel` indicates a SYSLOG level for supplemental functions in the library.
-(e.g. `msgprint()`)
-
-A default of zero instructs `msgmake()` to use the message severity letter.
-Zero collides with SYSLOG "panic". This is intentional.
+`msglevel` indicates a SYSLOG level for supplemental functions in the library 
+(e.g. `msgprint()`). A default of zero instructs `msgmake()` to use the message 
+severity letter. Zero collides with SYSLOG "panic"; this is intentional.
 
 
