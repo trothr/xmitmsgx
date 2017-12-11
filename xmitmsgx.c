@@ -32,18 +32,13 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     struct stat statbuf;
     char filename[256]; int filesize;
     int memsize, i;
-    char *p, *q, *escape;
+    char *p, *q, *escape, *locale;
 
     /* NULL struct pointer means to use global static storage
      * unless it was already used. */
-    if (ms == NULL && msglobal != NULL) return EINVAL;
+/*  if (ms == NULL && msglobal != NULL) return EINVAL;  */
+    if (ms == NULL && msglobal != NULL) return EBUSY;
     if (ms == NULL) ms = msglobal = &msstatic;
-
-/*
-    if (ms->msgmax > 0) return EBUSY;            ** already allocated **
-    if (ms->msgtable != NULL) return EBUSY;      ** already allocated **
-    if (ms->msgdata != NULL) return EBUSY;       ** already allocated **
- */
 
     ms->msgdata = NULL;
     ms->msgtable = NULL;
@@ -56,9 +51,14 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     filename[sizeof(filename)-1] = 0x00;
     rc = stat(filename,&statbuf);
 
-    /* if that didn't work then try LANG environment variable */
     if (rc != 0) {
-      (void) strncpy(ms->locale,getenv("LANG"),sizeof(ms->locale)-1);
+      (void) snprintf(filename,sizeof(filename)-1,
+        "%s.msgs",file);
+      rc = stat(filename,&statbuf); }
+
+    /* if that didn't work then try LANG environment variable */
+    if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
+      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
@@ -70,9 +70,10 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); } }
 
+
     /* if that didn't work then try LC_CTYPE environment variable */
-    if (rc != 0) {
-      (void) strncpy(ms->locale,getenv("LC_CTYPE"),sizeof(ms->locale)-1);
+    if (rc != 0 && (locale = getenv("LC_CTYPE")) != NULL && *locale != 0x00) {
+      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
@@ -85,8 +86,8 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
         rc = stat(filename,&statbuf); } }
 
     /* if that didn't work then try LOCALE environment variable */
-    if (rc != 0) {
-      (void) strncpy(ms->locale,getenv("LOCALE"),sizeof(ms->locale)-1);
+    if (rc != 0 && (locale = getenv("LOCALE")) != NULL && *locale != 0x00) {
+      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
@@ -100,6 +101,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
 
     /* if we can't find the file then return the best error we know */
     if (rc != 0) { if (errno != 0) return errno; else return rc; }
+
 
     /* allocate memory for the messages file */
     filesize = statbuf.st_size;    /* total size, in bytes */
@@ -226,7 +228,6 @@ int msgmake(struct MSGSTRUCT*ms)
     i = rc = snprintf(ms->msgbuf,ms->msglen,"%s%s%03d%c ",
       ms->pfxmaj,ms->pfxmin,ms->msgnum,*p);
 
-
     p++; if (*p == ' ') p++;
     ms->msgtext = p;
 
@@ -243,7 +244,8 @@ int msgmake(struct MSGSTRUCT*ms)
                 j = j + (*p & 0x0f);
                 p++;
               }
-            q = ms->msgv[j];
+            if (j < ms->msgc) q = ms->msgv[j];
+                         else q = "";
             while (*q != 0x00 && i < ms->msglen)
               {
                 ms->msgbuf[i] = *q;

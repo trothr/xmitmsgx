@@ -75,7 +75,7 @@ extern int msgprint(int,int,char**,int,struct MSGSTRUCT*);
 /* msgnum, msgc, msgv, opts */
 
 /* Write to file descriptor, optionally syslog. */
-extern int mstwrite(int,int,int,char**,int,struct MSGSTRUCT*);
+extern int msgwrite(int,int,int,char**,int,struct MSGSTRUCT*);
 /* fd, msgnum, msgc, msgv, opts */
 
 /* Generate a message and store it as a string. */

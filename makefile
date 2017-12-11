@@ -32,6 +32,13 @@ xmitmsg:	makefile xmitmsg.c dfopen.c
 		strip xmitmsg
 
 
+xmiterr:	xmiterr.o libxmitmsgx.a
+		$(CC) -o xmiterr xmiterr.o -L. -lxmitmsgx
+
+xmiterr.o:	xmiterr.c xmitmsgx.h
+		$(CC) -o xmiterr.o -c xmiterr.c
+
+
 #install:
 #		mv xmitmsg $(HOME)/.`platform`/bin/.
 
@@ -39,6 +46,6 @@ libraries:  libxmitmsgx.a libprotect.so
 
 clean:
 		rm -f *.o *.a *.so \
-			msgtest xfortune
+			msgtest xfortune xmiterr
 
 
