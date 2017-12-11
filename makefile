@@ -8,8 +8,8 @@
 _default:	msgtest
 		./msgtest
 
-msgtest:	msgtest.o xmitmsgx.o
-		$(CC) -o msgtest msgtest.o xmitmsgx.o
+msgtest:	msgtest.o libxmitmsgx.a
+		$(CC) -o msgtest msgtest.o -L. -lxmitmsgx
 
 msgtest.o:	msgtest.c xmitmsgx.h
 		$(CC) -o msgtest.o -c msgtest.c
@@ -17,7 +17,12 @@ msgtest.o:	msgtest.c xmitmsgx.h
 xmitmsgx.o:	xmitmsgx.c xmitmsgx.h
 		$(CC) -o xmitmsgx.o -c xmitmsgx.c
 
+libxmitmsgx.a:  xmitmsgx.o
+#	$(LD) -static -o $@ $+
+	$(AR) -r $@ $+
 
+libprotect.so:  xmitmsgx.o
+	$(LD) -shared -o $@ $+
 
 
 xmitmsg:	makefile xmitmsg.c dfopen.c
@@ -26,12 +31,14 @@ xmitmsg:	makefile xmitmsg.c dfopen.c
 		cc -o xmitmsg xmitmsg.o dfopen.o
 		strip xmitmsg
 
+
 #install:
 #		mv xmitmsg $(HOME)/.`platform`/bin/.
 
+libraries:  libxmitmsgx.a libprotect.so
 
 clean:
-		rm -f *.o \
+		rm -f *.o *.a *.so \
 			msgtest xfortune
 
 
