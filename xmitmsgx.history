@@ -19,3 +19,68 @@ In 2014, I created this 'xmitmsg' project.
 -- Rick Troth, 2017 Thanksgiving; <><
 
 
+/*
+ *        Date: 2017-Nov-23 (Thu) Thanksgiving 2017
+ */
+
+/*
+ * Correlation between IBM message codes and SYSLOG levels
+ * is imperfect but intentional.
+ *
+ *      Code    Type             
+ *                              LOG_DEBUG       7 = debugging
+ *      I       Information     LOG_INFO        6 = general info
+ *      R       Response        LOG_NOTICE      5 = req special handling
+ *      W       Warning         LOG_WARNING     4 = a warning
+ *      E       Error           LOG_ERR         3 = an error
+ *      S       Sever           LOG_CRIT        2 = critical condition
+ *      T       Terminal        LOG_ALERT       1 = req immed action
+ *                              LOG_EMERG       0 = panic
+ */
+
+/*
+
+LOG_KERN
+LOG_USER
+LOG_MAIL
+LOG_NEWS
+LOG_UUCP
+LOG_DAEMON
+LOG_AUTH
+LOG_CRON
+LOG_LPR
+
+LOG_LOCAL0
+LOG_LOCAL1
+LOG_LOCAL2
+LOG_LOCAL3
+LOG_LOCAL4
+LOG_LOCAL5
+LOG_LOCAL6
+LOG_LOCAL7
+
+/usr/include/sys/syslog.h
+ */
+
+
+notifications@github.com
+
+../../Library/tools/fcc  -O2 -c stty.c
+stty.c:155: warning 196: pointer target lost const qualifier
+Makefile.z80:137: fallo en las instrucciones para el objetivo 'stty.rel'
+make[2]: *** [stty.rel] Error 1
+make[2]: se sale del directorio 
+'/home/cocus/z80/fuzix/FUZIX/Applications/util'
+Makefile:10: fallo en las instrucciones para el objetivo 'util'
+make[1]: *** [util] Error 2
+make[1]: se sale del directorio 
+'/home/cocus/z80/fuzix/FUZIX/Applications'
+Makefile:60: fallo en las instrucciones para el objetivo 'apps'
+make: *** [apps] Error 2
+
+
+
+Santiago Hormazabal
+Alan Cox
+
+
