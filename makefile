@@ -44,6 +44,15 @@ xmiterr.o:	xmiterr.c xmitmsgx.h
 
 libraries:  libxmitmsgx.a libprotect.so
 
+tests:		test-xmiterr test-xmsgtest
+
+test-xmiterr:	xmiterr
+		./xmiterr 123 
+		./xmiterr 77 
+
+test-xmsgtest:	xmsgtest
+		./xmsgtest
+
 clean:
 		rm -f *.o *.a *.so \
 			msgtest xfortune xmiterr
