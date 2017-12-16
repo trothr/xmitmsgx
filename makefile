@@ -1,18 +1,20 @@
 #
 #
+#         Name: makefile (rules file for 'make')
+#       Author: Rick Troth, rogue programmer
+#         Date: 2017-Nov-25 (Sat) Thanksgiving 2017 roughly
 #
 #
-#
 
 
-_default:	msgtest
-		./msgtest
+_default:	xmsgtest
+		./xmsgtest
 
-msgtest:	msgtest.o libxmitmsgx.a
-		$(CC) -o msgtest msgtest.o -L. -lxmitmsgx
+xmsgtest:	xmsgtest.o libxmitmsgx.a
+		$(CC) -o xmsgtest xmsgtest.o -L. -lxmitmsgx
 
-msgtest.o:	msgtest.c xmitmsgx.h
-		$(CC) -o msgtest.o -c msgtest.c
+xmsgtest.o:	xmsgtest.c xmitmsgx.h
+		$(CC) -o xmsgtest.o -c xmsgtest.c
 
 xmitmsgx.o:	xmitmsgx.c xmitmsgx.h
 		$(CC) -o xmitmsgx.o -c xmitmsgx.c
@@ -46,6 +48,7 @@ libraries:  libxmitmsgx.a libprotect.so
 
 tests:		test-xmiterr test-xmsgtest
 
+# might need 'LANG=en_US ; export LANG' until smarter file search
 test-xmiterr:	xmiterr
 		./xmiterr 123 
 		./xmiterr 77 
@@ -55,6 +58,6 @@ test-xmsgtest:	xmsgtest
 
 clean:
 		rm -f *.o *.a *.so \
-			msgtest xfortune xmiterr
+			msgtest xmsgtest xfortune xmiterr
 
 

@@ -51,10 +51,17 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     filename[sizeof(filename)-1] = 0x00;
     rc = stat(filename,&statbuf);
 
+    /* if that didn't work then try appending ".msgs" extension */
     if (rc != 0) {
       (void) snprintf(filename,sizeof(filename)-1,
         "%s.msgs",file);
       rc = stat(filename,&statbuf); }
+    /* if that didn't work then try LANG environment variable */
+    if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
+      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
+      (void) snprintf(filename,sizeof(filename)-1,
+        "%s.%s.msgs",file,ms->locale);
+        rc = stat(filename,&statbuf); }
 
     /* if that didn't work then try LANG environment variable */
     if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
