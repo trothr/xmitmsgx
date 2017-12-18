@@ -4,168 +4,33 @@
 *       Author: Rick Troth, Rice University, Information Systems
 *         Date: 1993-May-24, Oct-30, 2017-Dec-03 (Sun)
 *
+*               The following is partially drawn from VM/CMS.
+*
 * The next line sets the token introducer.
 & 3
 * Also indicates default number of digits, which we ignore.
 *
 *nnnffllv mmmmmmmmmmmmmmmmmmmmmmmm...
-0000    I Default message repository for 'xmitmsg'.
 * We don't implement format numbers or line numbers but leave
 * those in this file for compatibility with the CMS impmenentation.
-   1    E EPERM
-0002    E ENOENT, file &1 not found.
-   3    E ESRCH
-   4    E EINTR
-   5    E EIO
-   6    E ENXIO
-   7    E E2BIG
-   8    E ENOEXEC
-   9    E EBADF
-  10    E ECHILD
+   2    E ENOENT, file &1 not found
+   3    E Invalid option: &1
+*
+   4    W Warning messages issued
+   8    E Error messages issued
+  12    S Severe error messages issued
+  16    T Terminal error messages issued
+*
   11    E EAGAIN, try the operation again
-  12    E ENOMEM
-  13    E EACCES
-  14    E EFAULT
-  15    E ENOTBLK
-  16    E EBUSY
-  17    E EEXIST
-  18    E EXDEV
-  19    E ENODEV
   20    E ENOTDIR, argument is not a directory
   21    E EISDIR, argument is a directory and should not be
   22    E EINVAL, invalid parameter or argument
-  23    E ENFILE
-  24    E EMFILE
-  25    E ENOTTY
-  26    E ETXTBSY
-  27    E EFBIG
-  28    E ENOSPC
-  29    E ESPIPE
-  30    E EROFS
-  31    E EMLINK
-  32    E EPIPE
-  33    E EDOM
-  34    E ERANGE
-  35    E EDEADLK
-  36    E ENAMETOOLONG
-  37    E ENOLCK
-  38    E ENOSYS
-  39    E ENOTEMPTY
-  40    E ELOOP
-  41    I no error
-  42    E ENOMSG
-  43    E EIDRM
-  44    E ECHRNG
-  45    E EL2NSYNC
-  46    E EL3HLT
-  47    E EL3RST
-  48    E ELNRNG
-  49    E EUNATCH
-  50    E ENOCSI
-  51    E EL2HLT
-  52    E EBADE
-  53    E EBADR
-  54    E EXFULL
-  55    E ENOANO
-  56    E EBADRQC
-  57    E EBADSLT
-  58    I no error
-  59    E EBFONT
-  60    E ENOSTR
-  61    E ENODATA
-  62    E ETIME
-  63    E ENOSR
-  64    E ENONET
-  65    E ENOPKG
-  66    E EREMOTE
-  67    E ENOLINK
-  68    E EADV
-  69    E ESRMNT
-  70    E ECOMM
-  71    E EPROTO
-  72    E EMULTIHOP
-  73    E EDOTDOT
-  74    E EBADMSG
-  75    E EOVERFLOW
-  76    E ENOTUNIQ
-  77    E EBADFD
-  78    E EREMCHG
-  79    E ELIBACC
-  80    E ELIBBAD
-  81    E ELIBSCN
-  82    E ELIBMAX
-  83    E ELIBEXEC
-  84    E EILSEQ
-  85    E ERESTART
-  86    E ESTRPIPE
-  87    E EUSERS
-  88    E ENOTSOCK
-  89    E EDESTADDRREQ
-  90    E EMSGSIZE
-  91    E EPROTOTYPE
-  92    E ENOPROTOOPT
-  93    E EPROTONOSUPPORT
-  94    E ESOCKTNOSUPPORT
-  95    E EOPNOTSUPP
-  96    E EPFNOSUPPORT
-  97    E EAFNOSUPPORT
-  98    E EADDRINUSE
-  99    E EADDRNOTAVAIL
- 100    E ENETDOWN
- 101    E ENETUNREACH
- 102    E ENETRESET
- 103    E ECONNABORTED
- 104    E ECONNRESET
- 105    E ENOBUFS
- 106    E EISCONN
- 107    E ENOTCONN
- 108    E ESHUTDOWN
- 109    E ETOOMANYREFS
- 110    E ETIMEDOUT
- 111    E ECONNREFUSED
- 112    E EHOSTDOWN
- 113    E EHOSTUNREACH
- 114    E EALREADY
- 115    E EINPROGRESS
- 116    E ESTALE
- 117    E EUCLEAN
- 118    E ENOTNAM
- 119    E ENAVAIL
- 120    E EISNAM
- 121    E EREMOTEIO
- 122    E EDQUOT
- 123    E ENOMEDIUM
- 124    E EMEDIUMTYPE
- 125    E ECANCELED
- 126    E ENOKEY
- 127    E EKEYEXPIRED
- 128    E EKEYREVOKED
- 129    E EKEYREJECTED
- 130    E EOWNERDEAD
- 131    E ENOTRECOVERABLE
 *
  384    E Missing modifier keyword(s).
  386    E Missing operand(s).
  389    E Invalid operand: &1
  405    E Invalid or missing message number
  408    E Number of substitutions exceeds 20
-*
- 512    E ERESTARTSYS
- 513    E ERESTARTNOINTR
- 514    E ERESTARTNOHAND
- 515    E ENOIOCTLCMD
- 516    E ERESTART_RESTARTBLOCK
-*
- 521    E EBADHANDLE
- 522    E ENOTSYNC
- 523    E EBADCOOKIE
- 524    E ENOTSUPP
- 525    E ETOOSMALL
- 526    E ESERVERFAULT
- 527    E EBADTYPE
- 528    E EJUKEBOX
- 529    E EIOCBQUEUED
- 530    E EIOCBRETRY
 *
  766    I Substitution character is &1
  767    I Number of message number characters to display is &1
@@ -178,7 +43,7 @@
  774    E Line numbers for messages are not consecutive.
  775    W Text too long.
 *
- 813    E Message repository "&1" not found.
- 814    E Message number "&1" was not found.
+ 813    E Message repository '&1' not found.
+ 814    E Message number &1 was not found.
 *
 *

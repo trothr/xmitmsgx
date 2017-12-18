@@ -47,6 +47,7 @@ xmiterr.o:	xmiterr.c xmitmsgx.h
 libraries:  libxmitmsgx.a libprotect.so
 
 tests:		test-xmiterr test-xmsgtest
+		@echo "$(MAKE): ##### all tests pass #####"
 
 # might need 'LANG=en_US ; export LANG' until smarter file search
 test-xmiterr:	xmiterr

@@ -5,6 +5,8 @@
  *      Author: Rick Troth, rogue programmer
  *        Date: 2017-Nov-25 (Sat) Thanksgiving 2017
  *
+ *              This is a re-do after some time ... a very long time.
+ *
  */
 
 #include <string.h>
@@ -35,8 +37,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     char *p, *q, *escape, *locale;
 
     /* NULL struct pointer means to use global static storage
-     * unless it was already used. */
-/*  if (ms == NULL && msglobal != NULL) return EINVAL;  */
+     * unless it was already used, in which case "busy". */
     if (ms == NULL && msglobal != NULL) return EBUSY;
     if (ms == NULL) ms = msglobal = &msstatic;
 
@@ -47,6 +48,8 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     ms->msgfile = NULL;
     (void) memset(ms->locale,0x00,sizeof(ms->locale));
     (void) memset(ms->applid,0x00,sizeof(ms->applid));
+
+    /* try the file directly */
     (void) strncpy(filename,file,sizeof(filename)-1);
     filename[sizeof(filename)-1] = 0x00;
     rc = stat(filename,&statbuf);
@@ -55,20 +58,23 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
     if (rc != 0) {
       (void) snprintf(filename,sizeof(filename)-1,
         "%s.msgs",file);
+      filename[sizeof(filename)-1] = 0x00;
       rc = stat(filename,&statbuf); }
-    /* if that didn't work then try LANG environment variable */
+
+    /* if that didn't work then try filename plus LANG variable */
     if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "%s.%s.msgs",file,ms->locale);
         rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try LANG environment variable */
+    /* if that didn't work then try locale with LANG variable */
     if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
+
     /* if that didn't work then try removing dotted encoding */
     if (rc != 0) {
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
@@ -84,6 +90,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
+
     /* if that didn't work then try removing dotted encoding */
     if (rc != 0) {
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
@@ -98,6 +105,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
+
     /* if that didn't work then try removing dotted encoding */
     if (rc != 0) {
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
@@ -108,7 +116,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
 
     /* if we can't find the file then return the best error we know */
     if (rc != 0) { if (errno != 0) return errno; else return rc; }
-
+    /* possibly NULL-out applid and locale and other members */
 
     /* allocate memory for the messages file */
     filesize = statbuf.st_size;    /* total size, in bytes */
