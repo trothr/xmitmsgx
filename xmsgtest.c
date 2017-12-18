@@ -14,6 +14,10 @@ int main()
     msgn = 2;
     msgo = 0;
 
+    /** report version ************************************************/
+    (void) printf("test: xmitmsgx version %d.%d.%d\n",
+      (XMITMSG_VERSION>>24),(XMITMSG_VERSION>>16)&0xFF,(XMITMSG_VERSION>>8)&0xFF);
+
     /** test msgopen() ************************************************/
     (void) printf("test: ***** msgopen() *****\n");
     rc = msgopen("xmitmsgx.msgs",0,&teststruct);

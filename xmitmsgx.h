@@ -11,6 +11,9 @@
 #ifndef _XMITMSG_H
 #define _XMITMSG_H
 
+/* xmitmsgx-2.0.17 */
+#define  XMITMSG_VERSION  (((2) << 24) + ((0) << 16) + ((17) << 8) + (0))
+
 /*       MSGLEVEL_DEBUG             SYSLOG 7 */
 #define  MSGLEVEL_INFO      'I'  /* SYSLOG 6 */
 #define  MSGLEVEL_REPLY     'R'  /* SYSLOG 5 NOTICE */
