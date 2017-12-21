@@ -19,14 +19,14 @@ int main(int argc, char*argv[])
     char *msgv[MSGMAX];
 
     /* Open the messages file, read it, get ready for service. */
-    rc = msgopen("errno",0,NULL);
+    rc = xmopen("errno",0,NULL);
     if (rc != 0) return rc;
 
     /* Ensure we have enough arguments. */
     if (argc < 2)
       {
-        (void) msgprint(22,0,NULL,0,NULL);
-        (void) msgclose(NULL);
+        (void) xmprint(22,0,NULL,0,NULL);
+        (void) xmclose(NULL);
         return 1;
       }
 
@@ -38,15 +38,15 @@ int main(int argc, char*argv[])
     msgc = i;
 
     /* Print to stdout or stderr depending on level, optionally syslog. */
-    rc = msgprint(msgn,msgc,msgv,0,NULL);
+    rc = xmprint(msgn,msgc,msgv,0,NULL);
     if (rc < 0)
       {
-        (void) msgclose(NULL);
+        (void) xmclose(NULL);
         return rc;
       }
 
     /* Clear the message repository struct. */
-    rc = msgclose(NULL);
+    rc = xmclose(NULL);
     if (rc != 0) return rc;
 
     return 0;

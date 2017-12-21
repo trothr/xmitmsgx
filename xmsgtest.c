@@ -6,7 +6,7 @@
 int main()
   {
     int rc, msgc, msgn, msgo;
-    char buffer[256], *msgv[16];
+    unsigned char buffer[256], *msgv[16];
     struct MSGSTRUCT teststruct;
 
     msgc = 4;
@@ -18,10 +18,10 @@ int main()
     (void) printf("test: xmitmsgx version %d.%d.%d\n",
       (XMITMSG_VERSION>>24),(XMITMSG_VERSION>>16)&0xFF,(XMITMSG_VERSION>>8)&0xFF);
 
-    /** test msgopen() ************************************************/
-    (void) printf("test: ***** msgopen() *****\n");
-    rc = msgopen("xmitmsgx.msgs",0,&teststruct);
-    (void) printf("test: msgopen() returned %d\n",rc);
+    /** test xmopen() ************************************************/
+    (void) printf("test: ***** xmopen() *****\n");
+    rc = xmopen("xmitmsgx.msgs",0,&teststruct);
+    (void) printf("test: xmopen() returned %d\n",rc);
     if (rc != 0) return rc;
 
     (void) printf(" max message number %d\n",teststruct.msgmax);
@@ -45,47 +45,47 @@ int main()
 
 
 
-    /** test msgmake() ************************************************/
-    (void) printf("test: ***** msgmake() *****\n");
+    /** test xmmake() ************************************************/
+    (void) printf("test: ***** xmmake() *****\n");
     teststruct.msgnum = 599;
-    rc = msgmake(&teststruct);
-    (void) printf("test: msgmake() returned %d\n",rc);
+    rc = xmmake(&teststruct);
+    (void) printf("test: xmmake() returned %d\n",rc);
 
-    /** test msgstring() **********************************************/
-    (void) printf("test: ***** msgstring() *****\n");
-    rc = msgstring(buffer,sizeof(buffer)-1,msgn,msgc,msgv,&teststruct);
-    (void) printf("test: msgstring() returned %d\n",rc);
+    /** test xmstring() **********************************************/
+    (void) printf("test: ***** xmstring() *****\n");
+    rc = xmstring(buffer,sizeof(buffer)-1,msgn,msgc,msgv,&teststruct);
+    (void) printf("test: xmstring() returned %d\n",rc);
     if (rc < 0) return rc;
     (void) printf(" '%s'\n",buffer);
 
-    /** test msgprint() ***********************************************/
-    (void) printf("test: ***** msgprint() *****\n");
-    rc = msgprint(msgn,msgc,msgv,msgo,&teststruct);
-    (void) printf("test: msgprint() returned %d\n",rc);
+    /** test xmprint() ***********************************************/
+    (void) printf("test: ***** xmprint() *****\n");
+    rc = xmprint(msgn,msgc,msgv,msgo,&teststruct);
+    (void) printf("test: xmprint() returned %d\n",rc);
     if (rc < 0) return rc;
 
     /** W, E, S, T ****************************************************/
     (void) printf("test: W/E/S/T\n");
-    rc = msgprint(4,msgc,msgv,msgo,&teststruct);
+    rc = xmprint(4,msgc,msgv,msgo,&teststruct);
     if (rc < 0) return rc;
-    rc = msgprint(8,msgc,msgv,msgo,&teststruct);
+    rc = xmprint(8,msgc,msgv,msgo,&teststruct);
     if (rc < 0) return rc;
-    rc = msgprint(12,msgc,msgv,msgo,&teststruct);
+    rc = xmprint(12,msgc,msgv,msgo,&teststruct);
     if (rc < 0) return rc;
-    rc = msgprint(16,msgc,msgv,msgo,&teststruct);
-    if (rc < 0) return rc;
-
-
-    /** test msgwrite() ***********************************************/
-    (void) printf("test: ***** msgwrite() *****\n");
-    rc = msgwrite(1,msgn,msgc,msgv,msgo,&teststruct);
-    (void) printf("test: msgwrite() returned %d\n",rc);
+    rc = xmprint(16,msgc,msgv,msgo,&teststruct);
     if (rc < 0) return rc;
 
-    /** test msgclose() ***********************************************/
-    (void) printf("test: ***** msgclose() *****\n");
-    rc = msgclose(&teststruct);
-    (void) printf("test: msgclose() returned %d\n",rc);
+
+    /** test xmwrite() ***********************************************/
+    (void) printf("test: ***** xmwrite() *****\n");
+    rc = xmwrite(1,msgn,msgc,msgv,msgo,&teststruct);
+    (void) printf("test: xmwrite() returned %d\n",rc);
+    if (rc < 0) return rc;
+
+    /** test xmclose() ***********************************************/
+    (void) printf("test: ***** xmclose() *****\n");
+    rc = xmclose(&teststruct);
+    (void) printf("test: xmclose() returned %d\n",rc);
     if (rc != 0) return rc;
 
     (void) printf("test: ***** all tests pass *****\n");

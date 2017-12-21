@@ -28,13 +28,13 @@ struct MSGSTRUCT *msglobal = NULL, msstatic;
  * Returns: zero upon successful operation
  * The VM/CMS counterpart does 'SET LANG' to load the messages file.
  */
-int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
+int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
   {
     int rc, fd;
     struct stat statbuf;
-    char filename[256]; int filesize;
+    unsigned char filename[256]; int filesize;
     int memsize, i;
-    char *p, *q, *escape, *locale;
+    unsigned char *p, *q, *escape, *locale;
 
     /* NULL struct pointer means to use global static storage
      * unless it was already used, in which case "busy". */
@@ -178,7 +178,7 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
 
 
     /* FIXME: write xmsgbase() and use it instead */
-    p = (char*) basename(ms->msgfile);
+    p = (unsigned char*) basename(ms->msgfile);
     (void) strncpy(ms->applid,p,sizeof(ms->applid)-1);
     p = ms->applid;
     while (*p != 0x00 && *p != '.') p++; *p = 0x00;
@@ -220,20 +220,20 @@ int msgopen(const char*file,int opts,struct MSGSTRUCT*ms)
   }
 
 /* ---------------------------------------------------------------- MAKE
- * Central function: make a message.
+ * This is the central function: make a message.
  * All other print, string, and write functions are derivatives.
  * Returns: zero upon successful operation
  */
-int msgmake(struct MSGSTRUCT*ms)
+int xmmake(struct MSGSTRUCT*ms)
   {
     int  rc, i, j;
-    char *p, *q;
+    unsigned char *p, *q;
 
     if (ms == NULL) return EINVAL; /* invalid argument */
     if (ms->msgnum <= 0) return EINVAL; /* invalid argument */
     if (ms->msgnum > ms->msgmax) return EINVAL; /* invalid argument */
 
-/* (void) printf("msgmake() msgnum %d\n",ms->msgnum); */
+/* (void) printf("xmmake() msgnum %d\n",ms->msgnum); */
     /* NULL pointer indicates an undefined message */
     if (ms->msgtable[ms->msgnum] == NULL) return ENOENT;   /* no entry */
 
@@ -312,11 +312,11 @@ int msgmake(struct MSGSTRUCT*ms)
  * Returns: number of characters printed, negative indicates error
  * Return value does not reflect SYSLOG effects or errors.
  */
-int msgprint(int msgnum,int msgc,char*msgv[],int msgopts,struct MSGSTRUCT*ms)
+int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUCT*ms)
   {
     int  rc;
     struct MSGSTRUCT ts;
-    char buffer[256];
+    unsigned char buffer[256];
 
     /* NULL message struct means use the static common struct */
     if (ms == NULL) ms = msglobal;
@@ -332,7 +332,7 @@ int msgprint(int msgnum,int msgc,char*msgv[],int msgopts,struct MSGSTRUCT*ms)
     ms->msgv = msgv;                       /* token array from caller */
     ms->msglevel = 0;             /* zero means set level from letter */
 
-    rc = msgmake(ms);                             /* make the message */
+    rc = xmmake(ms);                             /* make the message */
     if (rc < 0) return rc;
     if (rc > 0) return 0 - rc;
 
@@ -352,11 +352,11 @@ int msgprint(int msgnum,int msgc,char*msgv[],int msgopts,struct MSGSTRUCT*ms)
  * Returns: number of bytes written, negative indicates error
  * Return value does not reflect SYSLOG effects or errors.
  */
-int msgwrite(int fd,int msgnum,int msgc,char*msgv[],int msgopts,struct MSGSTRUCT*ms)
+int xmwrite(int fd,int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUCT*ms)
   {
     int  rc;
     struct MSGSTRUCT ts;
-    char buffer[256];
+    unsigned char buffer[256];
 
     /* NULL message struct means use the static common struct */
     if (ms == NULL) ms = msglobal;
@@ -372,7 +372,7 @@ int msgwrite(int fd,int msgnum,int msgc,char*msgv[],int msgopts,struct MSGSTRUCT
     ms->msgv = msgv;                       /* token array from caller */
     ms->msglevel = 0;             /* zero means set level from letter */
 
-    rc = msgmake(ms);                             /* make the message */
+    rc = xmmake(ms);                             /* make the message */
     if (rc < 0) return rc;
     if (rc > 0) return 0 - rc;
 
@@ -388,7 +388,7 @@ int msgwrite(int fd,int msgnum,int msgc,char*msgv[],int msgopts,struct MSGSTRUCT
  * Build the message and put it into a string buffer. No newline.
  * Returns: number of bytes in string, negative indicates error
  */
-int msgstring(char*output,int outlen,int msgnum,int msgc,char*msgv[],struct MSGSTRUCT*ms)
+int xmstring(unsigned char*output,int outlen,int msgnum,int msgc,unsigned char*msgv[],struct MSGSTRUCT*ms)
   {
     int  rc;
     struct MSGSTRUCT ts;
@@ -406,7 +406,7 @@ int msgstring(char*output,int outlen,int msgnum,int msgc,char*msgv[],struct MSGS
     ms->msgv = msgv;                       /* token array from caller */
     ms->msglevel = 0;             /* zero means set level from letter */
 
-    rc = msgmake(ms);                             /* make the message */
+    rc = xmmake(ms);                             /* make the message */
     if (rc < 0) return rc;
     if (rc > 0) return 0 - rc;
 
@@ -417,7 +417,7 @@ int msgstring(char*output,int outlen,int msgnum,int msgc,char*msgv[],struct MSGS
  * Close (figuratively): free common storage and reset static variables.
  * Returns: zero upon successful operation
  */
-int msgclose(struct MSGSTRUCT*ms)
+int xmclose(struct MSGSTRUCT*ms)
   {
     /* NULL struct pointer means to use global static storage */
     if (ms == NULL && msglobal == NULL) return EINVAL;
