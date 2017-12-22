@@ -1,3 +1,11 @@
+/*
+ *
+ *        Name: xmsgtest.c (C program source)
+ *              primary test harness for XMITMSGX library
+ *      Author: Rick Troth, rogue programmer, La Casita en la Esquina
+ *        Date: 2017-Nov-25 (Sat) Thanksgiving 2017
+ *
+ */
 
 #include <stdio.h>
 
@@ -16,7 +24,7 @@ int main()
 
     /** report version ************************************************/
     (void) printf("test: xmitmsgx version %d.%d.%d\n",
-      (XMITMSG_VERSION>>24),(XMITMSG_VERSION>>16)&0xFF,(XMITMSG_VERSION>>8)&0xFF);
+      (XMITMSGX_VERSION>>24),(XMITMSGX_VERSION>>16)&0xFF,(XMITMSGX_VERSION>>8)&0xFF);
 
     /** test xmopen() ************************************************/
     (void) printf("test: ***** xmopen() *****\n");
@@ -42,8 +50,6 @@ int main()
     char *prefix;       
     char *letter;       
  */
-
-
 
     /** test xmmake() ************************************************/
     (void) printf("test: ***** xmmake() *****\n");
@@ -88,7 +94,7 @@ int main()
     (void) printf("test: xmclose() returned %d\n",rc);
     if (rc != 0) return rc;
 
-    (void) printf("test: ***** all tests pass *****\n");
+    (void) printf("test: ***** regression tests passed *****\n");
 
     return 0;
   }

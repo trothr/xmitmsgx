@@ -16,7 +16,7 @@
 int main(int argc, char*argv[])
   {
     int rc, msgn, msgc, i, j;
-    char *msgv[MSGMAX];
+    unsigned char *msgv[MSGMAX];
 
     /* Open the messages file, read it, get ready for service. */
     rc = xmopen("errno",0,NULL);

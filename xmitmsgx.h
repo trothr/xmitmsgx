@@ -8,11 +8,11 @@
  *
  */
 
-#ifndef _XMITMSG_H
-#define _XMITMSG_H
+#ifndef _XMITMSGX_H
+#define _XMITMSGX_H
 
-/* xmitmsgx-2.0.18 */
-#define  XMITMSG_VERSION  (((2) << 24) + ((0) << 16) + ((18) << 8) + (0))
+/* xmitmsgx-2.0.19 */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((19) << 8) + (0))
 
 /*       MSGLEVEL_DEBUG             SYSLOG 7 */
 #define  MSGLEVEL_INFO      'I'  /* SYSLOG 6 */
@@ -24,10 +24,11 @@
 /*       MSGLEVEL_EMERG             SYSLOG 0 reserved */
 
 /* the following are used by derivative functions, not by xmmake() itself */
-#define  MSGFLAG_SYSLOG   0x01
-#define  MSGFLAG_NOLOG    0x02
-#define  MSGFLAG_NOCODE   0x04
-#define  MSGFLAG_NOPRINT  0x08
+#define  MSGFLAG_SYSLOG   0x01   /* used by xmopen() to set-up logging */
+#define  MSGFLAG_NOLOG    0x02   /* used by xmprint() and xmwrite() to skip logging */
+#define  MSGFLAG_NOCODE   0x04   /* means message text only, good for decorations */
+#define  MSGFLAG_NOPRINT  0x08   /* implies log only */
+/* what about time stamp? logging automtically has time stamping */
 
 
 typedef struct MSGSTRUCT
