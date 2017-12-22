@@ -45,7 +45,7 @@ Return value does not reflect SYSLOG effects or errors.
 message number  
 count of replacement tokens  
 array of replacement tokens  
-options  
+options: bitmask as an integer  
 pointer to MSGSTRUCT or NULL
 
 * int xmwrite(,,,,,)
@@ -61,7 +61,7 @@ file descriptor
 message number  
 count of replacement tokens  
 array of replacement tokens  
-options  
+options: bitmask as an integer  
 pointer to MSGSTRUCT or NULL
 
 * int xmstring(,,,,,)
@@ -74,8 +74,8 @@ Returns: number of bytes in string, negative indicates error
 pointer to buffer to hold resulting message string  
 size of output buffer  
 message number  
-count of rep  
-array of rep  
+count of replacement tokens  
+array of replacement tokens  
 pointer to MSGSTRUCT or NULL
 
 * int xmclose()
