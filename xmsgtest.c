@@ -44,11 +44,11 @@ int main()
     (void) printf(" applid '%s'\n",teststruct.applid);
 
 /*
-    int  msgopts;       
-    char *applid;       
-    char *caller;       
-    char *prefix;       
-    char *letter;       
+    int  msgopts;
+    char *applid;
+    char *caller;
+    char *prefix;
+    char *letter;
  */
 
     /** test xmmake() ************************************************/

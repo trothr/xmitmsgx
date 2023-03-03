@@ -1,7 +1,7 @@
 # MSGSTRUCT Members
 
 The central function in the library is `msgmake()`
-and the anchor for its operation is MSTSTRUCT.
+and the anchor for its operation is MSGSTRUCT.
 
 ## Required Supplied by Caller
 
