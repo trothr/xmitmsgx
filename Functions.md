@@ -1,19 +1,19 @@
 # XMITMSGX Functions
 
-The central function in the library is `xmmake()`.  
-Other functions are derivatives for convenience and standarization. 
+The central function in the library is `xmmake()`.
+Other functions are derivatives for convenience and standarization.
 
 ## Routines in the Library
 
 * int xmopen(,,)
 
-Open the messages file, read it, get ready for service.  
+Open the messages file, read it, get ready for service.
 Returns: zero upon successful operation
 
 `xmopen` takes the following arguments
 
-filename: pointer to unsigned character string  
-options: bitmask as an integer  
+filename: pointer to unsigned character string
+options: bitmask as an integer
 pointer to MSGSTRUCT or NULL
 
 You should supply a MSGSTRUCT to represent your message repository.
@@ -22,8 +22,8 @@ MSGSTRUCT, of which there is only one. (This is not thread safe.)
 
 * int xmmake()
 
-This is the central function: make a message.  
-All other print, string, and write functions are derivatives.  
+This is the central function: make a message.
+All other print, string, and write functions are derivatives.
 Returns: zero upon successful operation
 
 `xmmake` takes the following argument
@@ -35,47 +35,47 @@ MSGSTRUCT, if it was provisioned by xmopen(). This is not thread safe.
 
 * int xmprint(,,,,)
 
-Print a message, stdout or stderr depending on level/letter.  
-Newline automatically appended. Optionally SYSLOG the message.  
-Returns: number of characters printed, negative indicates error  
+Print a message, stdout or stderr depending on level/letter.
+Newline automatically appended. Optionally SYSLOG the message.
+Returns: number of characters printed, negative indicates error
 Return value does not reflect SYSLOG effects or errors.
 
 `xmprint` takes the following arguments
 
-message number  
-count of replacement tokens  
-array of replacement tokens  
-options: bitmask as an integer  
+message number
+count of replacement tokens
+array of replacement tokens
+options: bitmask as an integer
 pointer to MSGSTRUCT or NULL
 
 * int xmwrite(,,,,,)
 
-Write a message to the indicated file descriptor.  
-Newline automatically appended. Optionally SYSLOG the message.  
-Returns: number of bytes written, negative indicates error  
+Write a message to the indicated file descriptor.
+Newline automatically appended. Optionally SYSLOG the message.
+Returns: number of bytes written, negative indicates error
 Return value does not reflect SYSLOG effects or errors.
 
 `xmwrite` takes the following arguments
 
-file descriptor  
-message number  
-count of replacement tokens  
-array of replacement tokens  
-options: bitmask as an integer  
+file descriptor
+message number
+count of replacement tokens
+array of replacement tokens
+options: bitmask as an integer
 pointer to MSGSTRUCT or NULL
 
 * int xmstring(,,,,,)
 
-Build the message and put it into a string buffer. No newline.  
+Build the message and put it into a string buffer. No newline.
 Returns: number of bytes in string, negative indicates error
 
 `xmstring` takes the following arguments
 
-pointer to buffer to hold resulting message string  
-size of output buffer  
-message number  
-count of replacement tokens  
-array of replacement tokens  
+pointer to buffer to hold resulting message string
+size of output buffer
+message number
+count of replacement tokens
+array of replacement tokens
 pointer to MSGSTRUCT or NULL
 
 * int xmclose()

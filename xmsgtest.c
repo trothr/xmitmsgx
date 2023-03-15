@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "xmitmsgx.h"
 
@@ -19,59 +20,76 @@ int main()
 
     msgc = 4;
     msgv[0] = "ZZZ"; msgv[1] = "AAA"; msgv[2] = "BBB"; msgv[3] = "CCC";
+    msgv[4] = "DDD"; msgv[5] = "EEE"; msgv[6] = "FFF"; msgv[7] = "GGG";
     msgn = 2;
     msgo = 0;
 
+    (void) printf("\n");
+
     /** report version ************************************************/
-    (void) printf("test: xmitmsgx version %d.%d.%d\n",
+    (void) printf("xmsgtest: xmitmsgx version %d.%d.%d\n",
       (XMITMSGX_VERSION>>24),(XMITMSGX_VERSION>>16)&0xFF,(XMITMSGX_VERSION>>8)&0xFF);
 
     /** test xmopen() ************************************************/
-    (void) printf("test: ***** xmopen() *****\n");
-    rc = xmopen("xmitmsgx.msgs",0,&teststruct);
-    (void) printf("test: xmopen() returned %d\n",rc);
+    (void) memset(&teststruct,0x00,sizeof(teststruct));
+    teststruct.prefix = "msgtst";
+//  (void) printf("xmsgtest: ***** xmopen() *****\n");
+    rc = xmopen("xmitmsgx",0,&teststruct);
+    (void) printf("xmsgtest: xmopen() returned %d\n",rc);
     if (rc != 0) return rc;
 
     (void) printf(" max message number %d\n",teststruct.msgmax);
+//  sprintf(buffer,"%d",teststruct.msgmax); msgv[1] = buffer;
+//  rc = xmprint(111,2,msgv,msgo,&teststruct);
+//  if (rc < 0) return rc;
+
 /*  (void) printf(" raw message 2 '%s'\n",teststruct.msgtable[2]);  */
 /*  (void) printf(" msglevel %d\n",teststruct.msglevel);  */
 
     (void) printf(" esape '%c'\n",*teststruct.escape);
+// 112    I esape character '&' (token introducer)
+
     (void) printf(" major '%s' minor '%s'\n",teststruct.pfxmaj,teststruct.pfxmin);
+// 113    I code field major '&1' minor '&2'
+
     (void) printf(" messages file '%s'\n",teststruct.msgfile);
+// 114    I message source file '&1'
+
     (void) printf(" locale '%s'\n",teststruct.locale);
+// 115    I detected locale '&1'
 
     (void) printf(" applid '%s'\n",teststruct.applid);
+// 116    I detected applid '&1'
+
+    (void) printf(" caller '%s'\n",teststruct.caller);
+// 117    I detected caller '&1'
 
 /*
-    int  msgopts;
-    char *applid;
-    char *caller;
     char *prefix;
     char *letter;
  */
 
     /** test xmmake() ************************************************/
-    (void) printf("test: ***** xmmake() *****\n");
-    teststruct.msgnum = 599;
-    rc = xmmake(&teststruct);
-    (void) printf("test: xmmake() returned %d\n",rc);
+//  (void) printf("xmsgtest: ***** xmmake() *****\n");
+    teststruct.msgnum = 599;               /* known to be missing ... */
+    rc = xmmake(&teststruct);       /* ... so return code should be 2 */
+    (void) printf("xmsgtest: xmmake() returned %d\n",rc);
 
     /** test xmstring() **********************************************/
-    (void) printf("test: ***** xmstring() *****\n");
+//  (void) printf("xmsgtest: ***** xmstring() *****\n");
     rc = xmstring(buffer,sizeof(buffer)-1,msgn,msgc,msgv,&teststruct);
-    (void) printf("test: xmstring() returned %d\n",rc);
+    (void) printf("xmsgtest: xmstring() returned %d\n",rc);
     if (rc < 0) return rc;
     (void) printf(" '%s'\n",buffer);
 
     /** test xmprint() ***********************************************/
-    (void) printf("test: ***** xmprint() *****\n");
+//  (void) printf("xmsgtest: ***** xmprint() *****\n");
     rc = xmprint(msgn,msgc,msgv,msgo,&teststruct);
-    (void) printf("test: xmprint() returned %d\n",rc);
+    (void) printf("xmsgtest: xmprint() returned %d\n",rc);
     if (rc < 0) return rc;
 
     /** W, E, S, T ****************************************************/
-    (void) printf("test: W/E/S/T\n");
+    (void) printf("xmsgtest: W/E/S/T\n");
     rc = xmprint(4,msgc,msgv,msgo,&teststruct);
     if (rc < 0) return rc;
     rc = xmprint(8,msgc,msgv,msgo,&teststruct);
@@ -81,20 +99,20 @@ int main()
     rc = xmprint(16,msgc,msgv,msgo,&teststruct);
     if (rc < 0) return rc;
 
-
     /** test xmwrite() ***********************************************/
-    (void) printf("test: ***** xmwrite() *****\n");
+//  (void) printf("xmsgtest: ***** xmwrite() *****\n");
     rc = xmwrite(1,msgn,msgc,msgv,msgo,&teststruct);
-    (void) printf("test: xmwrite() returned %d\n",rc);
+    (void) printf("xmsgtest: xmwrite() returned %d\n",rc);
     if (rc < 0) return rc;
 
     /** test xmclose() ***********************************************/
-    (void) printf("test: ***** xmclose() *****\n");
+//  (void) printf("xmsgtest: ***** xmclose() *****\n");
     rc = xmclose(&teststruct);
-    (void) printf("test: xmclose() returned %d\n",rc);
+    (void) printf("xmsgtest: xmclose() returned %d\n",rc);
     if (rc != 0) return rc;
 
-    (void) printf("test: ***** regression tests passed *****\n");
+//  (void) printf("xmsgtest: ***** regression tests passed *****\n");
+    (void) printf("\n");
 
     return 0;
   }

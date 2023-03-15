@@ -19,6 +19,9 @@
 #include <syslog.h>
 #include <errno.h>
 
+#include <libgen.h>
+#include <ctype.h>
+
 #include "xmitmsgx.h"
 
 struct MSGSTRUCT *msglobal = NULL, msstatic;
@@ -41,41 +44,57 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
     if (ms == NULL && msglobal != NULL) return EBUSY;
     if (ms == NULL) ms = msglobal = &msstatic;
 
+    /* prepare to search for the message repository                   */
     ms->msgdata = NULL;
     ms->msgtable = NULL;
-
-    /* look for the message repository */
     ms->msgfile = NULL;
+
+    /* internationalization is a major justification for all the work */
     (void) memset(ms->locale,0x00,sizeof(ms->locale));
+//  locale = getenv("LANG");       /* looking for, e.g., "en_US.utf8" */
+//  if (locale == NULL || *locale == 0x00) locale = getenv("LC_ALL");
+//  (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
+//  locale = ms->locale;
+//  for (p = locale; *p != 0x00 && *p != '.'; p++);
+
     (void) memset(ms->applid,0x00,sizeof(ms->applid));
 
-    /* try the file directly */
+    /* try the file directly as if full name was supplied             */
     (void) strncpy(filename,file,sizeof(filename)-1);
     filename[sizeof(filename)-1] = 0x00;
     rc = stat(filename,&statbuf);
 
-    /* if that didn't work then try appending ".msgs" extension */
+    /* if that didn't work then try appending ".msgs" extension       */
     if (rc != 0) {
       (void) snprintf(filename,sizeof(filename)-1,
         "%s.msgs",file);
       filename[sizeof(filename)-1] = 0x00;
       rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try filename plus LANG variable */
+    /* if that didn't work then try filename plus LANG variable       */
     if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "%s.%s.msgs",file,ms->locale);
         rc = stat(filename,&statbuf); }
+    /* for the time being, we do not repeat this for all locale vars  */
 
-    /* if that didn't work then try locale with LANG variable */
+    /* if that didn't work then try removing locale dotted qualifier  */
+    if (rc != 0) {
+      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
+      if (*p != 0x00) { *p = 0x00;
+      (void) snprintf(filename,sizeof(filename)-1,
+        "%s.%s.msgs",file,ms->locale);
+        rc = stat(filename,&statbuf); } }
+
+    /* if that didn't work then try taking locale from LANG variable  */
     if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try removing dotted encoding */
+    /* if that didn't work then try removing locale dotted qualifier  */
     if (rc != 0) {
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
       if (*p != 0x00) { *p = 0x00;
@@ -83,15 +102,29 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); } }
 
+    /* if that didn't work then try locale from LC_ALL variable       */
+    if (rc != 0 && (locale = getenv("LC_ALL")) != NULL && *locale != 0x00) {
+      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
+      (void) snprintf(filename,sizeof(filename)-1,
+        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try LC_CTYPE environment variable */
+    /* if that didn't work then try removing locale dotted qualifier  */
+    if (rc != 0) {
+      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
+      if (*p != 0x00) { *p = 0x00;
+      (void) snprintf(filename,sizeof(filename)-1,
+        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        rc = stat(filename,&statbuf); } }
+
+    /* if that didn't work then try LC_CTYPE environment variable     */
     if (rc != 0 && (locale = getenv("LC_CTYPE")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try removing dotted encoding */
+    /* if that didn't work then try removing locale dotted qualifier  */
     if (rc != 0) {
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
       if (*p != 0x00) { *p = 0x00;
@@ -99,14 +132,14 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); } }
 
-    /* if that didn't work then try LOCALE environment variable */
+    /* if that didn't work then try the LOCALE environment variable   */
     if (rc != 0 && (locale = getenv("LOCALE")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try removing dotted encoding */
+    /* if that didn't work then try removing locale dotted qualifier  */
     if (rc != 0) {
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
       if (*p != 0x00) { *p = 0x00;
@@ -114,13 +147,14 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
         "/usr/share/locale/%s/%s.msgs",ms->locale,file);
         rc = stat(filename,&statbuf); } }
 
-    /* if we can't find the file then return the best error we know */
+    /* if we can't find the file then return the best error we know   */
     if (rc != 0) { if (errno != 0) return errno; else return rc; }
-    /* possibly NULL-out applid and locale and other members */
+    /* possibly NULL-out applid and locale and other members          */
+    /* There happens to be message number 813 for this condition.     */
 
-    /* allocate memory for the messages file */
-    filesize = statbuf.st_size;    /* total size, in bytes */
-    memsize = filesize + sizeof(filename) + 16;   /* add and pad */
+    /* allocate memory to hold the message repository source file     */
+    filesize = statbuf.st_size;          /* total file size, in bytes */
+    memsize = filesize + sizeof(filename) + 16;        /* add and pad */
     ms->msgdata = malloc(memsize);
     if (ms->msgdata == NULL) { if (errno != 0) return errno; else return ENOMEM; }
 
@@ -132,10 +166,10 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
     /* read the file into the buffer */
     rc = read(fd,ms->msgdata,filesize);
+    (void) close(fd);
     if (rc < 0) {
       (void) free(ms->msgdata);
       if (errno != 0) return errno; else return EBADF; }
-    (void) close(fd);
 
     /* put filename at end of buffer */
     p = &ms->msgdata[rc]; *p++ = 0x00;
@@ -177,20 +211,19 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
       }
 
 
-    /* FIXME: write xmsgbase() and use it instead */
+    /* use basename of the file as the applic */
     p = (unsigned char*) basename(ms->msgfile);
     (void) strncpy(ms->applid,p,sizeof(ms->applid)-1);
     p = ms->applid;
     while (*p != 0x00 && *p != '.') p++; *p = 0x00;
 
 
-    /* FIXME */
-    (void) sprintf(ms->pfxmaj,"TST");
-    (void) sprintf(ms->pfxmin,"MSG");
-    p = ms->applid;
-    for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmaj[i] = toupper(*p++);
+    /* establish major and minor prefix area */
+    if (ms->prefix == NULL || *ms->prefix == 0x00) ms->prefix = ms->applid;
+    p = ms->prefix;
+    for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmaj[i] = toupper((int)*p++);
     ms->pfxmaj[i] = 0x00;
-    for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmin[i] = toupper(*p++);
+    for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmin[i] = toupper((int)*p++);
     ms->pfxmin[i] = 0x00;
 
 
@@ -201,10 +234,8 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
       openlog(ms->applid,LOG_PID,LOG_USER);
       }
 
-/*
-    char *caller;
-    char *prefix;
- */
+    /* default "caller" is the user, but is better as function names  */
+    if (ms->caller == NULL || *ms->caller == 0x00) ms->caller = getenv("LOGNAME");
 
     /* force clear other elements of the struct */
     ms->msgnum = 0;
@@ -212,7 +243,7 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
     ms->msgbuf = NULL;   ms->msglen = 0;   ms->msgtext = NULL;
 
     ms->msglevel = 0;
-    ms->msgfmt = 0;   ms->msgline = 0;   /* neither implemented */
+    ms->msgfmt = 0;   ms->msgline = 0;  /* neither is yet implemented */
     ms->letter = NULL;
 
     /* return success */
@@ -222,7 +253,8 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
 /* ---------------------------------------------------------------- MAKE
  * This is the central function: make a message.
  * All other print, string, and write functions are derivatives.
- * Returns: zero upon successful operation
+ * Returns: zero upon successful operation, ENOENT or 814 if no message
+ * The VM/CMS counterpart is the APPLMSG macro (high level assembler).
  */
 int xmmake(struct MSGSTRUCT*ms)
   {
@@ -235,7 +267,7 @@ int xmmake(struct MSGSTRUCT*ms)
 
 /* (void) printf("xmmake() msgnum %d\n",ms->msgnum); */
     /* NULL pointer indicates an undefined message */
-    if (ms->msgtable[ms->msgnum] == NULL) return ENOENT;   /* no entry */
+    if (ms->msgtable[ms->msgnum] == NULL) return ENOENT;  /* no entry */
 
 
     p = ms->letter = ms->msgtable[ms->msgnum];
@@ -310,7 +342,9 @@ int xmmake(struct MSGSTRUCT*ms)
  * Print a message, stdout or stderr depending on level/letter.
  * Newline automatically appended. Optionally SYSLOG the message.
  * Returns: number of characters printed, negative indicates error
+ * Calls: xmmake()
  * Return value does not reflect SYSLOG effects or errors.
+ * The VM/CMS counterpart is the APPLMSG macro (high level assembler).
  */
 int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUCT*ms)
   {
@@ -350,7 +384,9 @@ int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUC
  * Write a message to the indicated file descriptor.
  * Newline automatically appended. Optionally SYSLOG the message.
  * Returns: number of bytes written, negative indicates error
- * Return value does not reflect SYSLOG effects or errors.
+ * Calls: xmmake()
+ * The return value does not reflect SYSLOG effects or errors.
+ * The VM/CMS counterpart is the APPLMSG macro (high level assembler).
  */
 int xmwrite(int fd,int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUCT*ms)
   {
@@ -387,6 +423,8 @@ int xmwrite(int fd,int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct M
 /* -------------------------------------------------------------- STRING
  * Build the message and put it into a string buffer. No newline.
  * Returns: number of bytes in string, negative indicates error
+ * Calls: xmmake()
+ * The VM/CMS counterpart (for Rexx variables) is the XMITMSG command.
  */
 int xmstring(unsigned char*output,int outlen,int msgnum,int msgc,unsigned char*msgv[],struct MSGSTRUCT*ms)
   {
@@ -431,6 +469,30 @@ int xmclose(struct MSGSTRUCT*ms)
     (void) memset(ms->pfxmin,0x00,sizeof(ms->pfxmin));
     (void) memset(ms->locale,0x00,sizeof(ms->locale));
 
+    return 0;
+  }
+
+/* ------------------------------------------------------------- LEV2PRI
+ *  Return an integer priority for a given severity level letter.
+ */
+int xmlev2pri(char*l)
+  {
+    switch (*l) {
+      case 'I': case 'i':
+        return 6;
+      case 'R': case 'r': case 'N': case 'n':
+        return 5;
+      case 'W': case 'w':
+        return 4;
+      case 'E': case 'e':
+        return 3;
+      case 'S': case 's': case 'C': case 'c':
+        return 2;
+      case 'T': case 't':
+        return 1;
+      default:
+        return 0;
+                }
     return 0;
   }
 

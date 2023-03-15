@@ -21,9 +21,8 @@ libxmitmsgx.a:  xmitmsgx.o
 	$(AR) -r $@ $+
 
 # this target is the shared library, if you just gotta
-libprotect.so:  xmitmsgx.o
+libxmitmsgx.so:  xmitmsgx.o
 	$(LD) -shared -o $@ $+
-
 
 # this target is left over from the original POSIX implementation
 xmitmsg:	makefile xmitmsg.c dfopen.c
@@ -31,7 +30,6 @@ xmitmsg:	makefile xmitmsg.c dfopen.c
 		cc -O -c xmitmsg.c
 		cc -o xmitmsg xmitmsg.o dfopen.o
 		strip xmitmsg
-
 
 # 'xmiterr' is a utility program which reports ERRNO messages
 xmiterr:	xmiterr.o libxmitmsgx.a
@@ -41,13 +39,12 @@ xmiterr:	xmiterr.o libxmitmsgx.a
 xmiterr.o:	xmiterr.c xmitmsgx.h
 		$(CC) -o xmiterr.o -c xmiterr.c
 
-
 # yeah, we need an "install" target
 #install:
 #		mv xmitmsg $(HOME)/.`platform`/bin/.
 
 # pseudo target to build static and shared libraries
-libraries:  libxmitmsgx.a libprotect.so
+libraries:  libxmitmsgx.a libxmitmsgx.so
 
 xmsgtest:	xmsgtest.o libxmitmsgx.a
 		$(CC) -o xmsgtest xmsgtest.o -L. -lxmitmsgx

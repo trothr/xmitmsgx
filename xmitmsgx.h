@@ -5,23 +5,26 @@
  *      Author: Rick Troth, rogue programmer
  *        Date: 2014-May-01 (Thu)
  *              2017-Nov-23 (Thu) Thanksgiving 2017
- *
+ *              2023-03-14 (Tue)
  */
 
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.0.19 */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((19) << 8) + (0))
+/* xmitmsgx-2.0.20 */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((20) << 8) + (0))
 
-/*       MSGLEVEL_DEBUG             SYSLOG 7 */
-#define  MSGLEVEL_INFO      'I'  /* SYSLOG 6 */
-#define  MSGLEVEL_REPLY     'R'  /* SYSLOG 5 NOTICE */
-#define  MSGLEVEL_WARNING   'W'  /* SYSLOG 4 */
-#define  MSGLEVEL_ERROR     'E'  /* SYSLOG 3 */
-#define  MSGLEVEL_SEVERE    'S'  /* SYSLOG 2 CRIT */
-#define  MSGLEVEL_TERMINAL  'T'  /* SYSLOG 1 ALERT */
-/*       MSGLEVEL_EMERG             SYSLOG 0 reserved */
+int xmlev2pri(char*l); /* SEV LEV LETTER pri */
+
+/* priorities (these are ordered)                                     */
+/*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
+#define MSGLEVEL_INFO     'I' /* LOG_INFO    6 informational */
+#define MSGLEVEL_REPLY    'R' /* LOG_NOTICE  5 normal but significant condition, ATTENTION */
+#define MSGLEVEL_WARNING  'W' /* LOG_WARNING 4 warning conditions */
+#define MSGLEVEL_ERROR    'E' /* LOG_ERR     3 error conditions */
+#define MSGLEVEL_SEVERE   'S' /* LOG_CRIT    2 critical conditions */
+#define MSGLEVEL_TERMINAL 'T' /* LOG_ALERT   1 action must be taken immediately */
+/*      MSGLEVEL_EMERG           LOG_EMERG   0 reserved */
 
 /* the following are used by derivative functions, not by xmmake() itself */
 #define  MSGFLAG_SYSLOG   0x01   /* used by xmopen() to set-up logging */
@@ -29,7 +32,6 @@
 #define  MSGFLAG_NOCODE   0x04   /* means message text only, good for decorations */
 #define  MSGFLAG_NOPRINT  0x08   /* implies log only */
 /* what about time stamp? logging automtically has time stamping */
-
 
 typedef struct MSGSTRUCT
   {
@@ -41,7 +43,7 @@ typedef struct MSGSTRUCT
     unsigned char *msgtext;     /* offset past msg code/header */
 
     int  msgfmt;        /* message format number (for future use) */
-    int  msgline;       /* message line number (for future use, zero means all) */
+    int  msgline;       /* message line number (for future use, zero means all lines) */
     int  msglevel;      /* message level/serverity (zero means use the letter in the file) */
     int  msgopts;       /* set by xmopen(), sometimes overridden for xmmake() */
 
@@ -54,8 +56,8 @@ typedef struct MSGSTRUCT
     int  msgmax;                /* highest message number in table */
     unsigned char **msgtable;   /* array of messages (allocated memory) */
     unsigned char *msgdata;     /* messages file content (allocated memory) */
-    unsigned char *msgfile;     /* name of message file found (for debugging) */
-    unsigned char *escape;
+    unsigned char *msgfile;     /* name of message file found (for reference and debugging) */
+    unsigned char *escape;      /* the escape character (for reference and debugging) */
 
     unsigned char  pfxmaj[4];   /* truncated up-cased applid/major */
     unsigned char  pfxmin[4];   /* truncated up-cased caller/minor */
@@ -64,12 +66,13 @@ typedef struct MSGSTRUCT
 
   } MSGSTRUCT;
 
-
 /* Open the messages file, read it, get ready for service. */
 extern int xmopen(const unsigned char*,int,struct MSGSTRUCT*);
 /* filename, opts, MSGSTRUCT */
 /* Specify a syslog ident via applid in MSGSTRUCT. */
 /* specify a syslog facility via optional MSGSTRUCT */
+// calls xminit()
+// may call openlog(char*ident,int option,int facility)
 
 /* This is the heart of the utility. */
 extern int xmmake(struct MSGSTRUCT*);
@@ -88,7 +91,34 @@ extern int xmstring(unsigned char*,int,int,int,unsigned char**,struct MSGSTRUCT*
 
 /* Clear the message repository struct. */
 extern int xmclose(struct MSGSTRUCT*);
+// calls xmquit()
+// may call closelog()
 
 #endif
+
+
+
+
+
+
+/* some example formats (for future use)
+00 standard message
+01 explanation
+02 user action
+03 mnemonics or symbolics
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
