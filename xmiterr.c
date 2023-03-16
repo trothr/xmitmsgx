@@ -5,6 +5,9 @@
  *      Author: Rick Troth, rogue programmer
  *        Date: 2017-Dec-10 (Sun)
  *
+ * This program is equivalent to:
+ *              xmitmsg --applid errno {msgno [token [token [...]]]}
+ *
  */
 
 #include <stdlib.h>
@@ -18,17 +21,15 @@ int main(int argc, char*argv[])
     int rc, msgn, msgc, i, j;
     unsigned char *msgv[MSGMAX];
 
-    /* Open the messages file, read it, get ready for service. */
+    /* Open the messages file, read it, get ready for service.        */
     rc = xmopen("errno",0,NULL);
     if (rc != 0) return rc;
 
     /* Ensure we have enough arguments. */
     if (argc < 2)
-      {
-        (void) xmprint(22,0,NULL,0,NULL);
+      { (void) xmprint(22,0,NULL,0,NULL);
         (void) xmclose(NULL);
-        return 1;
-      }
+        return 1; }
 
     /* Get message number and line-up any replacement tokens. */
     msgn = atoi(argv[1]);
@@ -40,10 +41,8 @@ int main(int argc, char*argv[])
     /* Print to stdout or stderr depending on level, optionally syslog. */
     rc = xmprint(msgn,msgc,msgv,0,NULL);
     if (rc < 0)
-      {
-        (void) xmclose(NULL);
-        return rc;
-      }
+      { (void) xmclose(NULL);
+        return rc; }
 
     /* Clear the message repository struct. */
     rc = xmclose(NULL);
@@ -51,5 +50,4 @@ int main(int argc, char*argv[])
 
     return 0;
   }
-
 

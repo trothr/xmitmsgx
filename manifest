@@ -1,0 +1,24 @@
+
+    manifest            this file
+
+    xmitmsgx.h          common header for the project
+    xmitmsgx.c          library of message handling functions
+    xmitmsgx.msgs       a sample message repository
+    makefile            the build logic
+    xmsgtest.c          primary test program
+    xmitmsg.c           utility program to present enumerated messages
+    xmiterr.c           sample Unix message handler for standard "errno" codes
+    errno.msgs          message repository for 'xmiterr' program
+
+    README.md           README for the project in markdown
+    Functions.md        list of functions in the library
+    Members.md          list of members in the MSGSTRUCT struct
+    SYSLOG.md           correlation between 'xmitmsg' and SYSLOG
+
+    errno.en_US.msgs    (deprecated, delete from git, see errno.msgs)
+    errno.sh            a utility script to gather errno constants
+    xmitmsgx.en_US.msgs  (deprecated, delete from git, see xmitmsgx.msgs)
+    xmitmsgx.history    as the name implies
+    xmitmsgx.license    as the name implies
+
+

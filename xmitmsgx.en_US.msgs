@@ -36,9 +36,6 @@
  115    I detected locale '&1'
  116    I detected applid '&1'
  117    I detected caller '&1'
- 119    I substitutions &1 &2 &3 &4 &5 &6 &7 &8 &9
-* Logically there is no limit to the number of substitutions, but we
-* only test to 9, and the CMS implementation is formally limited to 20.
 *
  384    E Missing modifier keyword(s).
  386    E Missing operand(s).

@@ -39,8 +39,8 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
     int memsize, i;
     unsigned char *p, *q, *escape, *locale;
 
-    /* NULL struct pointer means to use global static storage
-     * unless it was already used, in which case "busy". */
+    /* NULL struct pointer means to use global static storage         *
+     * unless it was already established, in which case "busy".       */
     if (ms == NULL && msglobal != NULL) return EBUSY;
     if (ms == NULL) ms = msglobal = &msstatic;
 
@@ -48,15 +48,7 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
     ms->msgdata = NULL;
     ms->msgtable = NULL;
     ms->msgfile = NULL;
-
-    /* internationalization is a major justification for all the work */
     (void) memset(ms->locale,0x00,sizeof(ms->locale));
-//  locale = getenv("LANG");       /* looking for, e.g., "en_US.utf8" */
-//  if (locale == NULL || *locale == 0x00) locale = getenv("LC_ALL");
-//  (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
-//  locale = ms->locale;
-//  for (p = locale; *p != 0x00 && *p != '.'; p++);
-
     (void) memset(ms->applid,0x00,sizeof(ms->applid));
 
     /* try the file directly as if full name was supplied             */
@@ -148,28 +140,33 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
         rc = stat(filename,&statbuf); } }
 
     /* if we can't find the file then return the best error we know   */
-    if (rc != 0) { if (errno != 0) return errno; else return rc; }
-    /* possibly NULL-out applid and locale and other members          */
+    if (rc != 0)
+      { if (msglobal != NULL) xmclose(msglobal);
+        if (errno != 0) return errno; else return rc; }
     /* There happens to be message number 813 for this condition.     */
 
     /* allocate memory to hold the message repository source file     */
     filesize = statbuf.st_size;          /* total file size, in bytes */
     memsize = filesize + sizeof(filename) + 16;        /* add and pad */
     ms->msgdata = malloc(memsize);
-    if (ms->msgdata == NULL) { if (errno != 0) return errno; else return ENOMEM; }
+    if (ms->msgdata == NULL)
+      { if (msglobal != NULL) xmclose(msglobal);
+        if (errno != 0) return errno; else return ENOMEM; }
 
     /* open the message repository */
     rc = fd = open(filename,O_RDONLY);
-    if (rc < 0) {
-      (void) free(ms->msgdata);
-      if (errno != 0) return errno; else return EBADF; }
+    if (rc < 0)
+      { (void) free(ms->msgdata); ms->msgdata = NULL;
+        if (msglobal != NULL) xmclose(msglobal);
+        if (errno != 0) return errno; else return EBADF; }
 
     /* read the file into the buffer */
     rc = read(fd,ms->msgdata,filesize);
     (void) close(fd);
-    if (rc < 0) {
-      (void) free(ms->msgdata);
-      if (errno != 0) return errno; else return EBADF; }
+    if (rc < 0)
+      { (void) free(ms->msgdata); ms->msgdata = NULL;
+        if (msglobal != NULL) xmclose(msglobal);
+        if (errno != 0) return errno; else return EBADF; }
 
     /* put filename at end of buffer */
     p = &ms->msgdata[rc]; *p++ = 0x00;
@@ -178,45 +175,48 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
     /* allocate the message array - sizing needs work */
     ms->msgtable = malloc(163840);
-    if (ms->msgtable == NULL) {
-      (void) free(ms->msgdata);
-      if (errno != 0) return errno; else return ENOMEM; }
+    if (ms->msgtable == NULL)
+      { (void) free(ms->msgdata); ms->msgdata = NULL;
+        if (msglobal != NULL) xmclose(msglobal);
+        if (errno != 0) return errno; else return ENOMEM; }
+    /* make sure we have clean pointers (all NULLs) */
     (void) memset(ms->msgtable,0x00,163840);
 
     /* parse the file */
     p = ms->msgdata;
     ms->msgmax = 0;
-    while (*p != 0x00) {
+    while (*p != 0x00)
+      {
 
-      /* mark off and measure this line */
-      q = p; i = 0;
-      while (*p != 0x00 && *p != '\n') { p++; i++; }
-      if (*p == '\n') *p++ = 0x00;
+        /* mark off and measure this line */
+        q = p; i = 0;
+        while (*p != 0x00 && *p != '\n') { p++; i++; }
+        if (*p == '\n') *p++ = 0x00;
 
-      /* skip comments */
-      if (*q == '*' || *q == '#') continue;
+        /* skip comments */
+        if (*q == '*' || *q == '#') continue;
 
-      /* look for escape character */
-      if (*q != ' ' && (*q < '0' || *q > '9')) { ms->escape = q; continue; }
+        /* look for escape character */
+        if (*q != ' ' && (*q < '0' || *q > '9')) { ms->escape = q; continue; }
 
-      /* ignore short lines */
-      if (i < 10) continue;
+        /* ignore short lines */
+        if (i < 10) continue;
 
-      /* parse this line */
-      q[4] = 0x00;
-      i = atoi(q);
-      if (i > ms->msgmax) ms->msgmax = i;
-      ms->msgtable[i] = &q[8];
+        /* parse this line */
+        q[4] = 0x00;
+        i = atoi(q);
+        ms->msgtable[i] = &q[8];
+
+        /* keep track of the highest message number in the file */
+        if (i > ms->msgmax) ms->msgmax = i;
 
       }
-
 
     /* use basename of the file as the applic */
     p = (unsigned char*) basename(ms->msgfile);
     (void) strncpy(ms->applid,p,sizeof(ms->applid)-1);
     p = ms->applid;
     while (*p != 0x00 && *p != '.') p++; *p = 0x00;
-
 
     /* establish major and minor prefix area */
     if (ms->prefix == NULL || *ms->prefix == 0x00) ms->prefix = ms->applid;
@@ -226,15 +226,13 @@ int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
     for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmin[i] = toupper((int)*p++);
     ms->pfxmin[i] = 0x00;
 
-
     /* handle SYSLOG and record other options */
     ms->msgopts = opts;
     if (ms->msgopts & MSGFLAG_SYSLOG) {
       /* figure out syslog identity */
-      openlog(ms->applid,LOG_PID,LOG_USER);
-      }
+      openlog(ms->applid,LOG_PID,LOG_USER); }
 
-    /* default "caller" is the user, but is better as function names  */
+    /* default "caller" is the user, but is better as a function name */
     if (ms->caller == NULL || *ms->caller == 0x00) ms->caller = getenv("LOGNAME");
 
     /* force clear other elements of the struct */
@@ -289,25 +287,22 @@ int xmmake(struct MSGSTRUCT*ms)
               {
                 j = j * 10;
                 j = j + (*p & 0x0f);
-                p++;
-              }
+                p++; }
             if (j < ms->msgc) q = ms->msgv[j];
                          else q = "";
             while (*q != 0x00 && i < ms->msglen)
               {
                 ms->msgbuf[i] = *q;
-                i++; q++;
-              }
+                i++; q++; }
             ms->msgbuf[i] = *p;
             if (*p == 0x00) break;
           } else {
             ms->msgbuf[i] = *p;
             if (*p == 0x00) break;
             i++; p++;
-          }
+                 }
       }
     ms->msglen = i;
-
 
     /* optional syslogging */
     if (ms->msgopts & MSGFLAG_SYSLOG) {
@@ -324,16 +319,7 @@ int xmmake(struct MSGSTRUCT*ms)
 /*                                              INTERNAL_NOPRI      */
         default:                 ms->msglevel = LOG_INFO;              break;
                            } }
-
                                       }
-
-    /* reset transient elements of the struct */
-/*
-    ms->msgnum = 0;
-    ms->msglevel = 0;
-    ms->letter = NULL;
- */
-    /* why reset them? caller might want them */
 
     return 0;
   }
@@ -354,23 +340,23 @@ int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUC
 
     /* NULL message struct means use the static common struct */
     if (ms == NULL) ms = msglobal;
-    if (ms == NULL) return EINVAL;
-    (void) memcpy(&ts,ms,sizeof(ts));
+    if (ms == NULL) return xm_negative(EINVAL);
+    (void) memcpy(&ts,ms,sizeof(ts));    /* make a copy of the struct */
     ms = &ts;
 
-    ms->msgbuf = buffer;          /* output buffer supplied by caller */
-    ms->msglen = sizeof(buffer) - 1;         /* size of output buffer */
-
-    ms->msgnum = msgnum;        /* message number specified by caller */
-    ms->msgc = msgc;                   /* count of tokens from caller */
-    ms->msgv = msgv;                       /* token array from caller */
+    ms->msgbuf = buffer;    /* output buffer supplied by this routine */
+    ms->msglen = sizeof(buffer) - 1;     /* size of the output buffer */
+    ms->msgnum = msgnum;    /* message number specified by the caller */
+    ms->msgc = msgc;               /* count of tokens from the caller */
+    ms->msgv = msgv;                   /* token array from the caller */
     ms->msglevel = 0;             /* zero means set level from letter */
+    ms->msgopts |= msgopts;
 
-    rc = xmmake(ms);                             /* make the message */
-    if (rc < 0) return rc;
-    if (rc > 0) return 0 - rc;
+    rc = xmmake(ms);                              /* make the message */
+    if (rc != 0) return xm_negative(rc);    /* if error then negative */
 
-/*  syslog(ms->msglevel,"%s",ms->msgbuf); */
+    /* optionally route to SYSLOG */
+    if (ms->msgopts & MSGFLAG_SYSLOG) syslog(ms->msglevel,"%s",ms->msgbuf);
 
     if (ms->msglevel > 5)
     rc = fprintf(stdout,"%s\n",ms->msgbuf);
@@ -396,23 +382,23 @@ int xmwrite(int fd,int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct M
 
     /* NULL message struct means use the static common struct */
     if (ms == NULL) ms = msglobal;
-    if (ms == NULL) return EINVAL;
-    (void) memcpy(&ts,ms,sizeof(ts));
+    if (ms == NULL) return xm_negative(EINVAL);
+    (void) memcpy(&ts,ms,sizeof(ts));    /* make a copy of the struct */
     ms = &ts;
 
-    ms->msgbuf = buffer;          /* output buffer supplied by caller */
-    ms->msglen = sizeof(buffer) - 1;         /* size of output buffer */
-
-    ms->msgnum = msgnum;        /* message number specified by caller */
-    ms->msgc = msgc;                   /* count of tokens from caller */
-    ms->msgv = msgv;                       /* token array from caller */
+    ms->msgbuf = buffer;    /* output buffer supplied by this routine */
+    ms->msglen = sizeof(buffer) - 1;     /* size of the output buffer */
+    ms->msgnum = msgnum;    /* message number specified by the caller */
+    ms->msgc = msgc;               /* count of tokens from the caller */
+    ms->msgv = msgv;                   /* token array from the caller */
     ms->msglevel = 0;             /* zero means set level from letter */
+    ms->msgopts |= msgopts;
 
-    rc = xmmake(ms);                             /* make the message */
-    if (rc < 0) return rc;
-    if (rc > 0) return 0 - rc;
+    rc = xmmake(ms);                              /* make the message */
+    if (rc != 0) return xm_negative(rc);    /* if error then negative */
 
-/*  syslog(ms->msglevel,"%s",ms->msgbuf); */
+    /* optionally route to SYSLOG */
+    if (ms->msgopts & MSGFLAG_SYSLOG) syslog(ms->msglevel,"%s",ms->msgbuf);
 
     ms->msgbuf[ms->msglen++] = '\n';
     rc = write(fd,ms->msgbuf,ms->msglen);
@@ -433,20 +419,19 @@ int xmstring(unsigned char*output,int outlen,int msgnum,int msgc,unsigned char*m
 
     /* NULL message struct means use the static common struct */
     if (ms == NULL) ms = msglobal;
-    if (ms == NULL) return EINVAL;
-    (void) memcpy(&ts,ms,sizeof(ts));
+    if (ms == NULL) return xm_negative(EINVAL);
+    (void) memcpy(&ts,ms,sizeof(ts));    /* make a copy of the struct */
     ms = &ts;
 
-    ms->msgbuf = output;          /* output buffer supplied by caller */
-    ms->msglen = outlen;                     /* size of output buffer */
-    ms->msgnum = msgnum;        /* message number specified by caller */
-    ms->msgc = msgc;                   /* count of tokens from caller */
-    ms->msgv = msgv;                       /* token array from caller */
+    ms->msgbuf = output;      /* output buffer supplied by the caller */
+    ms->msglen = outlen;                 /* size of the output buffer */
+    ms->msgnum = msgnum;    /* message number specified by the caller */
+    ms->msgc = msgc;               /* count of tokens from the caller */
+    ms->msgv = msgv;                   /* token array from the caller */
     ms->msglevel = 0;             /* zero means set level from letter */
 
-    rc = xmmake(ms);                             /* make the message */
-    if (rc < 0) return rc;
-    if (rc > 0) return 0 - rc;
+    rc = xmmake(ms);                              /* make the message */
+    if (rc != 0) return xm_negative(rc);    /* if error then negative */
 
     return ms->msglen;   /* normal return is length of message string */
   }
@@ -461,39 +446,62 @@ int xmclose(struct MSGSTRUCT*ms)
     if (ms == NULL && msglobal == NULL) return EINVAL;
     if (ms == NULL) { ms = msglobal; msglobal = NULL; }
 
-    if (ms->msgdata != NULL) (void) free(ms->msgdata);
-    if (ms->msgtable != NULL) (void) free(ms->msgtable);
+    /* release any allocated storage for this MSGSTRUCT */
+    if (ms->msgdata != NULL) { (void) free(ms->msgdata); ms->msgdata = NULL; }
+    if (ms->msgtable != NULL) { (void) free(ms->msgtable); ms->msgtable = NULL; }
     if (ms->msgopts & MSGFLAG_SYSLOG) closelog();
+    ms->msgopts = 0;
 
+    /* clear character fields */
     (void) memset(ms->pfxmaj,0x00,sizeof(ms->pfxmaj));
     (void) memset(ms->pfxmin,0x00,sizeof(ms->pfxmin));
     (void) memset(ms->locale,0x00,sizeof(ms->locale));
+    (void) memset(ms->applid,0x00,sizeof(ms->applid));
+
+    /* force clear other elements of the struct */
+    ms->msgnum = ms->msgmax = 0;
+    ms->msgc = 0;   ms->msgv = NULL;
+    ms->msgbuf = NULL;   ms->msglen = 0;   ms->msgtext = NULL;
+
+    ms->msglevel = 0;
+    ms->msgfmt = 0;   ms->msgline = 0;  /* neither is yet implemented */
+    ms->caller = ms->prefix = ms->letter = ms->escape = NULL;
+    ms->msgfile = NULL;
 
     return 0;
   }
 
 /* ------------------------------------------------------------- LEV2PRI
  *  Return an integer priority for a given severity level letter.
+ *  This routine is not presently used because xmmake() handles it.
  */
-int xmlev2pri(char*l)
+int xm_lev2pri(char*l)
   {
     switch (*l) {
-      case 'I': case 'i':
-        return 6;
+      case 'I': case 'i':       /* MSGLEVEL_INFO */
+        return LOG_INFO;        /* 6 */
       case 'R': case 'r': case 'N': case 'n':
-        return 5;
-      case 'W': case 'w':
-        return 4;
-      case 'E': case 'e':
-        return 3;
+        return LOG_NOTICE;      /* 5 */
+      case 'W': case 'w':       /* MSGLEVEL_WARNING */
+        return LOG_WARNING;     /* 4 */
+      case 'E': case 'e':       /* MSGLEVEL_ERROR */
+        return LOG_ERR;         /* 3 */
       case 'S': case 's': case 'C': case 'c':
-        return 2;
-      case 'T': case 't':
-        return 1;
+        return LOG_CRIT;        /* 2 */
+      case 'T': case 't':       /* MSGLEVEL_TERMINAL */
+        return LOG_ALERT;       /* 1 */
       default:
         return 0;
                 }
     return 0;
   }
 
+/* ------------------------------------------------------------ NEGATIVE
+ *  Force the supplied integer to be negative. Good for error indications.
+ *  Yeah, yeah, ... it's cheezy. But it works.
+ */
+int xm_negative(int n)
+  { if (n < 0) return n;
+          else return 0 - n;
+  }
 

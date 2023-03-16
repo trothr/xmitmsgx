@@ -11,10 +11,8 @@
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.0.20 */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((20) << 8) + (0))
-
-int xmlev2pri(char*l); /* SEV LEV LETTER pri */
+/* xmitmsgx-2.0.21 */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((21) << 8) + (0))
 
 /* priorities (these are ordered)                                     */
 /*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
@@ -94,12 +92,11 @@ extern int xmclose(struct MSGSTRUCT*);
 // calls xmquit()
 // may call closelog()
 
+/* internal functions */
+int xm_lev2pri(char*);
+int xm_negative(int);
+
 #endif
-
-
-
-
-
 
 /* some example formats (for future use)
 00 standard message
@@ -107,18 +104,4 @@ extern int xmclose(struct MSGSTRUCT*);
 02 user action
 03 mnemonics or symbolics
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

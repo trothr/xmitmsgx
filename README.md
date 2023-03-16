@@ -2,30 +2,30 @@
 
 `xmitmsgx` is a library and `xmitmsg` is program for presenting
 enumerated messages. The command works similarly to that of IBM VM/CMS
-'XMITMSG' but with Unix syntax (dashed options before positional arguments) 
-rather than CMS syntax (positional args, open paren, then options). 
-The message file source format is the same as that of CMS 
-except it does not have to be pre-processed.
+'XMITMSG' but with Unix syntax (dashed options before positional arguments)
+rather than CMS syntax (positional args, open paren, then options).
+The message file source format is the same as that of CMS except it
+does not have to be pre-processed.
 
 ## Rationale
 
 Application messages in context can be referenced by number.
 The text of the message can be made available in any local language.
-Tokens, for lack of a better term, can be inserted into the message 
+Tokens, for lack of a better term, can be inserted into the message
 with correct placement.
 
-This is suitable for
+This is suitable for ...
 
 * error messages
 * non-error status messages
 * logging, reporting
 * decorations: button labels, title bars, field identifiers
 
-anything textual intended for human consumption.
+ ... anything textual intended for human consumption.
 
 ## Example
 
-An example from recent traffic in the FUZIX project,
+For an example from actual traffic in the FUZIX project,
 consider both English and Spanish for a failing `make` target:
 
     fallo en las instrucciones para el objetivo 'stty.rel'
