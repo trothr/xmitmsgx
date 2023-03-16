@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+#         Name: configure (shell script)
+#               part of the standard recipe
+#       Author: Rick Troth, rogue programmer
+#         Date: 2023-03-16 (Thu)
+#
+#
+
+cd `dirname "$0"`
+
+CFLAGS=""
+PREFIX=/usr
+
+while [ ! -z "$*" ] ; do
+  case "$1" in
+    --prefix)
+      shift ; PREFIX="$1"
+  esac
+  shift
+done
+
+#
+US=`uname -s`
+UM=`uname -m | sed 's#^i.86$#i386#' | sed 's#^armv.l$#arm#'`
+case "$US" in
+  Linux|FreeBSD)
+    CFLAGS="-fPIC"
+    ;;
+  CYGWIN*)
+    US="CYGWIN"
+    ;;
+  SunOS|AIX)
+    UM=`uname -p`
+    ;;
+  OS390)
+    UM="s390x" # guessing! since both "s390x" and "s390" are viable
+    ;;
+esac
+
+SYSTEM="$US-$UM"
+
+cat makefile.in \
+  | sed "s#%CFLAGS%#$CFLAGS#g" \
+  | sed "s#%PREFIX%#$PREFIX#g" \
+  | sed "s#%SYSTEM%#$SYSTEM#g" \
+  > makefile
+
+exit
+

@@ -1,4 +1,5 @@
 /*
+ *
  *        Name: xmitmsg.c (C program source)
  *              "transmit message" for POSIX
  *              read and present enumerated messages from the repository

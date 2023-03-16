@@ -31,7 +31,7 @@ struct MSGSTRUCT *msglobal = NULL, msstatic;
  * Returns: zero upon successful operation
  * The VM/CMS counterpart does 'SET LANG' to load the messages file.
  */
-int xmopen(const unsigned char*file,int opts,struct MSGSTRUCT*ms)
+int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
   {
     int rc, fd;
     struct stat statbuf;
@@ -277,25 +277,31 @@ int xmmake(struct MSGSTRUCT*ms)
     ms->msgtext = p;
 
     while (i < ms->msglen)
-      {
-
-        if (*p == *ms->escape)
-          {
-            p++;
+      { if (*p == *ms->escape)
+          { p++;
             j = 0;
             while ('0' <= *p && *p <= '9')
-              {
-                j = j * 10;
+              { j = j * 10;
                 j = j + (*p & 0x0f);
                 p++; }
             if (j < ms->msgc) q = ms->msgv[j];
                          else q = "";
             while (*q != 0x00 && i < ms->msglen)
-              {
-                ms->msgbuf[i] = *q;
+              { ms->msgbuf[i] = *q;
                 i++; q++; }
             ms->msgbuf[i] = *p;
             if (*p == 0x00) break;
+//        } else if (*p == '\\') {
+//          p++; switch (*p) {
+//            case 'n': ms->msgbuf[i] = '\n';
+//                      break;
+//            case 't': ms->msgbuf[i] = '\t';
+//                      break;
+//            default: ms->msgbuf[i] = '*';
+//                      break;
+//                           }
+//          if (*p == 0x00) break;
+//          i++; p++;
           } else {
             ms->msgbuf[i] = *p;
             if (*p == 0x00) break;
@@ -475,7 +481,7 @@ int xmclose(struct MSGSTRUCT*ms)
  *  Return an integer priority for a given severity level letter.
  *  This routine is not presently used because xmmake() handles it.
  */
-int xm_lev2pri(char*l)
+int xm_lev2pri(unsigned char*l)
   {
     switch (*l) {
       case 'I': case 'i':       /* MSGLEVEL_INFO */

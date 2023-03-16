@@ -5,14 +5,14 @@
  *      Author: Rick Troth, rogue programmer
  *        Date: 2014-May-01 (Thu)
  *              2017-Nov-23 (Thu) Thanksgiving 2017
- *              2023-03-14 (Tue)
+ *              2023-03-16 (Thu)
  */
 
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.0.21 */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((21) << 8) + (0))
+/* xmitmsgx-2.0.22 */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((22) << 8) + (0))
 
 /* priorities (these are ordered)                                     */
 /*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
@@ -65,7 +65,7 @@ typedef struct MSGSTRUCT
   } MSGSTRUCT;
 
 /* Open the messages file, read it, get ready for service. */
-extern int xmopen(const unsigned char*,int,struct MSGSTRUCT*);
+extern int xmopen(unsigned char*,int,struct MSGSTRUCT*);
 /* filename, opts, MSGSTRUCT */
 /* Specify a syslog ident via applid in MSGSTRUCT. */
 /* specify a syslog facility via optional MSGSTRUCT */
@@ -76,15 +76,15 @@ extern int xmopen(const unsigned char*,int,struct MSGSTRUCT*);
 extern int xmmake(struct MSGSTRUCT*);
 
 /* Print to stdout or stderr depending on level, optionally syslog. */
-extern int xmprint(int,int,unsigned char**,int,struct MSGSTRUCT*);
+extern int xmprint(int,int,unsigned char*[],int,struct MSGSTRUCT*);
 /* msgnum, msgc, msgv, opts */
 
 /* Write to file descriptor, optionally syslog. */
-extern int xmwrite(int,int,int,unsigned char**,int,struct MSGSTRUCT*);
+extern int xmwrite(int,int,int,unsigned char*[],int,struct MSGSTRUCT*);
 /* fd, msgnum, msgc, msgv, opts */
 
 /* Generate a message and store it as a string. */
-extern int xmstring(unsigned char*,int,int,int,unsigned char**,struct MSGSTRUCT*);
+extern int xmstring(unsigned char*,int,int,int,unsigned char*[],struct MSGSTRUCT*);
 /* output, outlen, msgnum, msgc, msgv */
 
 /* Clear the message repository struct. */
@@ -93,8 +93,8 @@ extern int xmclose(struct MSGSTRUCT*);
 // may call closelog()
 
 /* internal functions */
-int xm_lev2pri(char*);
-int xm_negative(int);
+extern int xm_lev2pri(unsigned char*);
+extern int xm_negative(int);
 
 #endif
 
@@ -104,4 +104,5 @@ int xm_negative(int);
 02 user action
 03 mnemonics or symbolics
  */
+
 

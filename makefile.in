@@ -4,7 +4,7 @@
 #       Author: Rick Troth, rogue programmer
 #         Date: 2017-Nov-25 (Sat) Thanksgiving 2017 roughly
 #               2023-03-16 (Thu) converted to makefile.in configuration
-#         Note: this makefile configured for Linux-i386
+#         Note: this makefile configured for %SYSTEM%
 #
 #
 
@@ -12,9 +12,9 @@ DELIVERABLES    =       xmitmsg xmiterr libxmitmsgx.a libxmitmsgxdyn.so
 
 ##### configuration #####
 
-CFLAGS          =       -fPIC
-PREFIX          =       /usr
-SYSTEM          =       Linux-i386
+CFLAGS          =       %CFLAGS%
+PREFIX          =       %PREFIX%
+SYSTEM          =       %SYSTEM%
 
 ##### configuration #####
 

@@ -4,7 +4,9 @@
     xmitmsgx.h          common header for the project
     xmitmsgx.c          library of message handling functions
     xmitmsgx.msgs       a sample message repository
-    makefile            the build logic
+    makefile            the build logic, after configuration
+    makefile.in         the build logic, master file
+    configure           createse makefile from makefile.in
     xmsgtest.c          primary test program
     xmitmsg.c           utility program to present enumerated messages
     xmiterr.c           sample Unix message handler for standard "errno" codes
