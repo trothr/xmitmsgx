@@ -16,6 +16,13 @@ while [ ! -z "$*" ] ; do
   case "$1" in
     --prefix)
       shift ; PREFIX="$1"
+      ;;
+    --prefix=*)
+      PREFIX=`echo "$1" | awk -F= '{print $2}'`
+      ;;
+    *)
+      echo "ignoring '$1'"
+      ;;
   esac
   shift
 done
@@ -47,4 +54,26 @@ cat makefile.in \
   > makefile
 
 exit
+
+
+
+
+
+
+
+FreeBSD:
+
+make a shared library
+/usr/bin/cc -fPIC -shared -Wl,-soname,libxmitmsgxdyn.so -o libxmitmsgxdyn.so CMakeFiles/xmitmsgxdyn.dir/xmitmsgx.c.o 
+
+make a static library
+/usr/bin/ar qc libxmitmsgx.a CMakeFiles/xmitmsgx.dir/xmitmsgx.c.o
+/usr/bin/ranlib libxmitmsgx.a
+
+
+
+
+
+CMAKE_SHARED_LINKER_FLAGS
+
 

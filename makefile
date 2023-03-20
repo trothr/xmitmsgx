@@ -4,17 +4,17 @@
 #       Author: Rick Troth, rogue programmer
 #         Date: 2017-Nov-25 (Sat) Thanksgiving 2017 roughly
 #               2023-03-16 (Thu) converted to makefile.in configuration
-#         Note: this makefile configured for Linux-i386
+#         Note: this makefile configured for Linux-x86_64
 #
 #
 
 DELIVERABLES    =       xmitmsg xmiterr libxmitmsgx.a libxmitmsgxdyn.so
+SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
 
 ##### configuration #####
 
 CFLAGS          =       -fPIC
 PREFIX          =       /usr
-SYSTEM          =       Linux-i386
 
 ##### configuration #####
 
@@ -27,11 +27,18 @@ all:		$(DELIVERABLES)
 # this target is an 'ar' archive static library
 libxmitmsgx.a:  xmitmsgx.o
 #	$(LD) -static -o $@ $+
-		$(AR) -r $@ $+
+#		$(AR) -r $@ $+
+		$(AR) -r libxmitmsgx.a xmitmsgx.o
+#
+# $@ is the target
+# $+ is the list of dependencies but does not work everywhere
+#
 
 # this target is the shared library, if you just gotta
 libxmitmsgxdyn.so:  xmitmsgx.o
-		$(LD) -shared -o $@ $+
+#		$(LD) -shared -o $@ $+
+#		$(CC) -shared -o $@ $+
+		$(CC) -shared -o libxmitmsgxdyn.so xmitmsgx.o
 
 # this object is the library
 xmitmsgx.o:     makefile xmitmsgx.c xmitmsgx.h
@@ -39,11 +46,13 @@ xmitmsgx.o:     makefile xmitmsgx.c xmitmsgx.h
 
 # fetch the source from GitHub
 xmitmsgx.c:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
 
 # fetch the source from GitHub
 xmitmsgx.h:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
 
 # this target is left over from the original POSIX implementation
 xmitmsg:	makefile xmitmsg.o xmitmsgx.o
@@ -56,7 +65,8 @@ xmitmsg.o:      makefile xmitmsg.c xmitmsgx.h
 
 # fetch the source from GitHub
 xmitmsg.c:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
 
 # 'xmiterr' is a utility program which reports ERRNO messages
 xmiterr:	makefile xmiterr.o xmitmsgx.o
@@ -69,7 +79,8 @@ xmiterr.o:      makefile xmiterr.c xmitmsgx.h
 
 # fetch the source from GitHub
 xmiterr.c:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
 
 # pseudo target to build static and shared libraries
 libraries:  libxmitmsgx.a libxmitmsgxdyn.so
@@ -83,8 +94,9 @@ xmsgtest.o:     makefile xmsgtest.c xmitmsgx.h
 
 # fetch the source from GitHub
 xmsgtest.c:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
-    
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
+
 # pseudo target to run tests
 tests:		test-xmitmsg test-xmiterr test-xmsgtest
 		@echo "$(MAKE): ##### all tests passed, whoop! #####"
@@ -96,8 +108,8 @@ test-xmitmsg:   xmitmsg
 # arbitrarily drive several ERRNO messages by number
 # might need 'LANG=en_US ; export LANG' until smarter file search
 test-xmiterr:	xmiterr
-		./xmiterr 123 
-		./xmiterr 77 
+		./xmiterr 123
+		./xmiterr 77
 
 # run the primary test program
 test-xmsgtest:	xmsgtest
@@ -128,17 +140,22 @@ makefile:	makefile.in
 		@false
 
 # fetch the sources from GitHub
-makefile.in:    configure
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
-    
+makefile.in:
+		@$(MAKE) configure
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
+
 configure:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
-    
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
+
 xmitmsgx.msgs:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
-    
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
+
 errno.msgs:
-		wget https://raw.githubusercontent.com/trothr/xmitmsgx/master/$@
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
 
 # reset things for a fresh build from source
 clean:

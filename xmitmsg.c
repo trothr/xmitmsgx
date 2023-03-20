@@ -11,6 +11,7 @@
  */
 
 #include <stdlib.h>
+#include <strings.h>
 
 #define MSGMAX 16
 
@@ -25,47 +26,42 @@ int main(int argc,char*argv[])
     int rc, msgn, msgc, i, j, n;
     unsigned char *applid, *caller, *letter, buffer[256], *msgv[MSGMAX];
 
-    applid = "xmitmsgx";
+    /* establish some defaults */
+    msgv[0] = applid = "xmitmsgx";
     letter = caller = "";
 
+    /* parse command options */
     for (n = 1; n < argc && argv[n][0] == '-'; n++)
       {
-        switch (argv[n][2])
-          {
-            case 'a':   if (++n >= argc) break;
-                        applid = argv[n];
-                        break;
-            case 'c':   if (++n >= argc) break;
-                        caller = argv[n];
-                        break;
-            case 'l':   if (++n >= argc) break;
-                        letter = argv[n];
-                        break;
-            default:
-                        break;
-          }
+        if (strcasecmp(argv[n],"--applid") == 0)
+          { if (++n < argc) applid = argv[n]; } else
+        if (strcasecmp(argv[n],"--caller") == 0)
+          { if (++n < argc) caller = argv[n]; } else
+        if (strcasecmp(argv[n],"--letter") == 0)
+          { if (++n < argc) letter = argv[n]; } else
+        /* unknown option ** msgn = 3; msgv[1] = argv[n]             */
+          { xmopen("xmitmsgx",0,NULL); msgv[1] = argv[n];
+            (void) xmprint(3,2,msgv,0,NULL);
+            (void) xmclose(NULL); return 1; }
       }
 
-//  msgn = atoi(argv[n++]);
+/*  msgn = atoi(argv[n++]);     ** wait, not even sure we have it yet */
     msgc = argc - n;
 
     /* Ensure that we have enough arguments.                          */
     if (msgc < 1)
       { xmopen("xmitmsgx",0,NULL);
-/*      (void) xmprint(386,0,NULL,0,NULL);   ** "Missing operand(s)." */
-        (void) xmprint(405,0,NULL,0,NULL);
-        (void) xmclose(NULL);
-        return 1; }     /* return code was originally 24 to match CMS */
+        (void) xmprint(405,0,NULL,0,NULL);  /* missing message number */
+        (void) xmclose(NULL); return 1; }
+
 
     /* Open the messages file, read it, get ready for service.        */
     rc = xmopen(applid,0,NULL);
     /* But if that failed try to report *why* it failed.              */
     if (rc != 0)
-      { xmopen("xmitmsgx",0,NULL);
-        msgv[1] = applid; msgc = 2;
-        (void) xmprint(rc,msgc,msgv,0,NULL);
-        (void) xmclose(NULL);
-        return 1; }
+      { xmopen("xmitmsgx",0,NULL); msgv[1] = applid;
+        (void) xmprint(813,2,msgv,0,NULL);
+        (void) xmclose(NULL); return 1; }
 
     msgn = atoi(argv[n++]);
     msgc = argc - n;
@@ -79,8 +75,7 @@ int main(int argc,char*argv[])
     /* Print stdout or stderr, depending on level, optionally syslog. */
     rc = xmprint(msgn,msgc,msgv,0,NULL);
     if (rc < 0)
-      { (void) xmclose(NULL);
-        return rc; }
+      { (void) xmclose(NULL); return rc; }
 
     /* Clear the message repository struct. */
     rc = xmclose(NULL);
@@ -107,21 +102,17 @@ XMITMSG --applid applid [options] msgnumber [substitution [substitution [...]]]
 
 --APPLID applid
 
-         The message header consists of:
+      The message header consists of:
 
          xxxmmmnnns
          xxxmmmnnnns
 
-         Where:
+      Where:
 
-         xxx
-                  specifies the application ID, DMS for CMS
-         mmm
-                  specifies the CALLER name
-         nnn or nnnn
-                  specifies the message number
-         s
-                  specifies the severity code
+         xxx      specifies the application ID
+         mmm      specifies the CALLER name
+         nnn or nnnn  specifies the message number
+         s        specifies the severity code
 
 3. You can use XMITMSG from CMS to display a repository message on your
    screen; this is useful when you want to verify the content of a repository.

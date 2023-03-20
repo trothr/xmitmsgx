@@ -28,7 +28,7 @@ struct MSGSTRUCT *msglobal = NULL, msstatic;
 
 /* ---------------------------------------------------------------- OPEN
  * Open the messages file, read it, get ready for service.
- * Returns: zero upon successful operation
+ * Returns: zero upon successful operation, or 813 if cannot open the repository file
  * The VM/CMS counterpart does 'SET LANG' to load the messages file.
  */
 int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
@@ -42,7 +42,8 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     /* NULL struct pointer means to use global static storage         *
      * unless it was already established, in which case "busy".       */
     if (ms == NULL && msglobal != NULL) return EBUSY;
-    if (ms == NULL) ms = msglobal = &msstatic;
+    if (ms == NULL) { rc = xmopen(file,opts,&msstatic);
+        if (rc != 0) return rc; msglobal = &msstatic; return 0; }
 
     /* prepare to search for the message repository                   */
     ms->msgdata = NULL;
@@ -52,16 +53,11 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     (void) memset(ms->applid,0x00,sizeof(ms->applid));
 
     /* try the file directly as if full name was supplied             */
-    (void) strncpy(filename,file,sizeof(filename)-1);
-    filename[sizeof(filename)-1] = 0x00;
-    rc = stat(filename,&statbuf);
-
-    /* if that didn't work then try appending ".msgs" extension       */
-    if (rc != 0) {
       (void) snprintf(filename,sizeof(filename)-1,
         "%s.msgs",file);
       filename[sizeof(filename)-1] = 0x00;
-      rc = stat(filename,&statbuf); }
+      rc = stat(filename,&statbuf);
+    file = basename(file);
 
     /* if that didn't work then try filename plus LANG variable       */
     if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
@@ -263,10 +259,8 @@ int xmmake(struct MSGSTRUCT*ms)
     if (ms->msgnum <= 0) return EINVAL; /* invalid argument */
     if (ms->msgnum > ms->msgmax) return EINVAL; /* invalid argument */
 
-/* (void) printf("xmmake() msgnum %d\n",ms->msgnum); */
     /* NULL pointer indicates an undefined message */
-    if (ms->msgtable[ms->msgnum] == NULL) return ENOENT;  /* no entry */
-
+    if (ms->msgtable[ms->msgnum] == NULL) return 814;     /* no entry */
 
     p = ms->letter = ms->msgtable[ms->msgnum];
 
@@ -291,17 +285,17 @@ int xmmake(struct MSGSTRUCT*ms)
                 i++; q++; }
             ms->msgbuf[i] = *p;
             if (*p == 0x00) break;
-//        } else if (*p == '\\') {
-//          p++; switch (*p) {
-//            case 'n': ms->msgbuf[i] = '\n';
-//                      break;
-//            case 't': ms->msgbuf[i] = '\t';
-//                      break;
-//            default: ms->msgbuf[i] = '*';
-//                      break;
-//                           }
-//          if (*p == 0x00) break;
-//          i++; p++;
+          } else if (*p == '\\') {
+            p++; switch (*p) {
+              case 'n': ms->msgbuf[i] = '\n';
+                        break;
+              case 't': ms->msgbuf[i] = '\t';
+                        break;
+              default: ms->msgbuf[i] = '*';
+                        break;
+                             }
+            if (*p == 0x00) break;
+            i++; p++;
           } else {
             ms->msgbuf[i] = *p;
             if (*p == 0x00) break;
