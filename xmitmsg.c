@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <stdio.h>
+
 #define MSGMAX 16
 
 #include "xmitmsgx.h"
@@ -25,10 +27,14 @@ int main(int argc,char*argv[])
   {
     int rc, msgn, msgc, i, j, n;
     unsigned char *applid, *caller, *letter, buffer[256], *msgv[MSGMAX];
+    struct MSGSTRUCT ts, *ms;
 
     /* establish some defaults */
     msgv[0] = applid = "xmitmsgx";
     letter = caller = "";
+    ms = &ts;
+
+//  perror("perror()");
 
     /* parse command options */
     for (n = 1; n < argc && argv[n][0] == '-'; n++)
@@ -54,9 +60,8 @@ int main(int argc,char*argv[])
         (void) xmprint(405,0,NULL,0,NULL);  /* missing message number */
         (void) xmclose(NULL); return 1; }
 
-
     /* Open the messages file, read it, get ready for service.        */
-    rc = xmopen(applid,0,NULL);
+    rc = xmopen(applid,0,ms);
     /* But if that failed try to report *why* it failed.              */
     if (rc != 0)
       { xmopen("xmitmsgx",0,NULL); msgv[1] = applid;
@@ -72,13 +77,48 @@ int main(int argc,char*argv[])
     while (i < MSGMAX && j < argc) msgv[i++] = argv[j++];
     msgc = i;
 
+
+
+
     /* Print stdout or stderr, depending on level, optionally syslog. */
-    rc = xmprint(msgn,msgc,msgv,0,NULL);
-    if (rc < 0)
-      { (void) xmclose(NULL); return rc; }
+//  rc = xmprint(msgn,msgc,msgv,0,NULL);
+//  if (rc < 0)
+//    { (void) xmclose(NULL); return rc; }
+    /* above should be replaced with a call to xmmake() and simply printf() */
+
+    ms->msgnum = msgn;
+    ms->msgc = msgc;               /* count of tokens from the caller */
+    ms->msgv = msgv;                   /* token array from the caller */
+    ms->msgbuf = buffer;    /* output buffer supplied by this routine */
+    ms->msglen = sizeof(buffer) - 1;     /* size of the output buffer */
+    ms->caller = caller;
+
+
+    ms->msglevel = 0;             /* zero means set level from letter */
+//  ms->msgopts |= msgopts;
+
+    rc = xmmake(ms);                              /* make the message */
+//  if (rc != 0) return xm_negative(rc);    /* if error then negative */
+    if (rc == 814)
+      { xmopen("xmitmsgx",0,NULL);
+        snprintf(buffer,sizeof(buffer),"%d",msgn); msgv[1] = buffer;
+        (void) xmprint(814,2,msgv,0,NULL);
+        (void) xmclose(NULL); return 1; }
+    else perror("second");
+
+
+if (rc == 0)
+    rc = printf("%s\n",ms->msgbuf);
+
+
+
+
+
+
+
 
     /* Clear the message repository struct. */
-    rc = xmclose(NULL);
+    rc = xmclose(ms);
     if (rc != 0) return rc;
 
     return 0;

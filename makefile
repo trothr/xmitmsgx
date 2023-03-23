@@ -8,6 +8,9 @@
 #
 #
 
+APPLID          =       xmitmsgx
+VERSION         =       2.1.0
+
 DELIVERABLES    =       xmitmsg xmiterr libxmitmsgx.a libxmitmsgxdyn.so
 SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
 
@@ -135,6 +138,32 @@ install:        $(DELIVERABLES) xmitmsgx.msgs errno.msgs
 #		cp -p *.c *.h makefile $(PREFIX)/src/.
 
 #
+# http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html
+xmitmsgx.rpm:   xmitmsgx.spec
+#		rpmbuild -bb --nodeps xmitmsgx.spec
+		./rpmbuild.sh $(APPLID) $(VERSION)
+
+#
+xmitmsgx.spec:  xmitmsgx.spec.in
+		@echo "$(MAKE): checking required variables"
+		test ! -z "$(UNAMEM)" # UNAMEM
+		test ! -z "$(RELEASE)" # RELEASE
+		test ! -z "$(STAGING)" # STAGING
+		cat xmitmsgx.spec.in \
+		  | sed 's#%SPEC_PREFIX%#$(PREFIX)#g' \
+		  | sed 's#%SPEC_UNAMEM%#$(UNAMEM)#g' \
+		  | sed 's#%SPEC_VERSION%#$(VERSION)#g' \
+		  | sed 's#%SPEC_RELEASE%#$(RELEASE)#g' \
+		  | sed 's#%SPEC_STAGING%#$(STAGING)#g' \
+		  | sed 's#%SPEC_APPLID%#$(APPLID)#g' \
+                  > xmitmsgx.spec
+
+# fetch the source from GitHub
+xmitmsgx.spec.in:
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
+
+#
 makefile:	makefile.in
 		@echo "$(MAKE): you need to re-run ./configure"
 		@false
@@ -159,7 +188,9 @@ errno.msgs:
 
 # reset things for a fresh build from source
 clean:
-		rm -f *.o *.a *.so \
-			msgtest xmsgtest xfortune xmiterr xmitmsg
+		rm -f *.o *.a *.so *.dylib *.rpm \
+			msgtest xmsgtest xfortune xmiterr xmitmsg \
+			xmitmsgx.spec
+		rm -rf rpmbuild.d
 
 

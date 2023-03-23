@@ -61,7 +61,7 @@ int main()
     (void) printf(" applid '%s'\n",teststruct.applid);
 // 116    I detected applid '&1'
 
-    (void) printf(" caller '%s'\n",teststruct.caller);
+//  (void) printf(" caller '%s'\n",teststruct.caller);
 // 117    I detected caller '&1'
 
 /*

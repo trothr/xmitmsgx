@@ -137,8 +137,8 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
     /* if we can't find the file then return the best error we know   */
     if (rc != 0)
-      { if (msglobal != NULL) xmclose(msglobal);
-        if (errno != 0) return errno; else return rc; }
+//    { if (msglobal != NULL) xmclose(msglobal);         // CHECK
+      { if (errno != 0) return errno; else return rc; }
     /* There happens to be message number 813 for this condition.     */
 
     /* allocate memory to hold the message repository source file     */
@@ -146,14 +146,14 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     memsize = filesize + sizeof(filename) + 16;        /* add and pad */
     ms->msgdata = malloc(memsize);
     if (ms->msgdata == NULL)
-      { if (msglobal != NULL) xmclose(msglobal);
-        if (errno != 0) return errno; else return ENOMEM; }
+//    { if (msglobal != NULL) xmclose(msglobal);                // CHECK
+      { if (errno != 0) return errno; else return ENOMEM; }
 
     /* open the message repository */
     rc = fd = open(filename,O_RDONLY);
     if (rc < 0)
       { (void) free(ms->msgdata); ms->msgdata = NULL;
-        if (msglobal != NULL) xmclose(msglobal);
+//      if (msglobal != NULL) xmclose(msglobal);                // CHECK
         if (errno != 0) return errno; else return EBADF; }
 
     /* read the file into the buffer */
@@ -161,7 +161,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     (void) close(fd);
     if (rc < 0)
       { (void) free(ms->msgdata); ms->msgdata = NULL;
-        if (msglobal != NULL) xmclose(msglobal);
+//      if (msglobal != NULL) xmclose(msglobal);                // CHECK
         if (errno != 0) return errno; else return EBADF; }
 
     /* put filename at end of buffer */
@@ -173,7 +173,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     ms->msgtable = malloc(163840);
     if (ms->msgtable == NULL)
       { (void) free(ms->msgdata); ms->msgdata = NULL;
-        if (msglobal != NULL) xmclose(msglobal);
+//      if (msglobal != NULL) xmclose(msglobal);                // CHECK
         if (errno != 0) return errno; else return ENOMEM; }
     /* make sure we have clean pointers (all NULLs) */
     (void) memset(ms->msgtable,0x00,163840);
@@ -229,7 +229,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
       openlog(ms->applid,LOG_PID,LOG_USER); }
 
     /* default "caller" is the user, but is better as a function name */
-    if (ms->caller == NULL || *ms->caller == 0x00) ms->caller = getenv("LOGNAME");
+//  if (ms->caller == NULL || *ms->caller == 0x00) ms->caller = getenv("LOGNAME");
 
     /* force clear other elements of the struct */
     ms->msgnum = 0;

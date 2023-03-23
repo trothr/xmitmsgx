@@ -11,8 +11,8 @@
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.0.23 */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((0) << 16) + ((23) << 8) + (0))
+/* xmitmsgx-2.1.0 */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((0) << 8) + (0))
 
 /* priorities (these are ordered)                                     */
 /*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
@@ -30,6 +30,9 @@
 #define  MSGFLAG_NOCODE   0x04   /* means message text only, good for decorations */
 #define  MSGFLAG_NOPRINT  0x08   /* implies log only */
 /* what about time stamp? logging automtically has time stamping */
+
+#define  MSGERR_NOLIB     813
+#define  MSGERR_NOMSG     814
 
 typedef struct MSGSTRUCT
   {
