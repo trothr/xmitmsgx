@@ -28,10 +28,14 @@ Returns: zero upon successful operation
 
 `xmmake` takes the following argument
 
-pointer to MSGSTRUCT or NULL
+pointer to MSGSTRUCT
 
-If you supply NULL then xmmake() will attempt to use a global static
-MSGSTRUCT, if it was provisioned by xmopen(). This is not thread safe.
+While some functions will accept NULL for the MSGSTRUCT pointer,
+xmmake() does not.
+
+You must provide xmmake() with a buffer
+to hold the message, member `msgbuf`, and its length, `msglen`.
+The latter will be replaced with the size of the message.
 
 * int xmprint(,,,,)
 

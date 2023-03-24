@@ -3,7 +3,7 @@
 The central function in the library is `xmmake()`
 and the anchor for its operation is MSGSTRUCT.
 
-The MSGSTRUCT should be initialized by calling `xmopen()`
+The MSGSTRUCT must be initialized by calling `xmopen()`
 before calling `xmmake()`.
 
 ## Required Supplied by Caller
