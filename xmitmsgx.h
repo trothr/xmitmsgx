@@ -62,8 +62,8 @@ typedef struct MSGSTRUCT
 
     unsigned char  pfxmaj[4];   /* truncated up-cased applid/major */
     unsigned char  pfxmin[4];   /* truncated up-cased caller/minor */
-    unsigned char  locale[24];  /* possibly truncated to match the nearest file found */
-    unsigned char  applid[16];  /* default is basename of messages file, used as SYSLOG identity */
+    unsigned char  locale[32];  /* possibly truncated to match the nearest file found */
+    unsigned char  applid[32];  /* default is basename of messages file, used as SYSLOG identity */
 
   } MSGSTRUCT;
 
