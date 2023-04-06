@@ -9,7 +9,6 @@
 
 cd `dirname "$0"`
 
-CFLAGS=""
 PREFIX=/usr
 
 while [ ! -z "$*" ] ; do
@@ -28,11 +27,11 @@ while [ ! -z "$*" ] ; do
 done
 
 #
-US=`uname -s`
+US=`uname -s | sed 's#/##g'`
 UM=`uname -m | sed 's#^i.86$#i386#' | sed 's#^armv.l$#arm#'`
 case "$US" in
   Linux|FreeBSD)
-    CFLAGS="-fPIC"
+    CFLAGS="$CFLAGS -fPIC"
     ;;
   CYGWIN*)
     US="CYGWIN"
@@ -42,6 +41,8 @@ case "$US" in
     ;;
   OS390)
     UM="s390x" # guessing! since both "s390x" and "s390" are viable
+    CC="xlc"
+    LDFLAGS="-O -qxplink -qdll"
     ;;
 esac
 
@@ -51,6 +52,7 @@ cat makefile.in \
   | sed "s#%CFLAGS%#$CFLAGS#g" \
   | sed "s#%PREFIX%#$PREFIX#g" \
   | sed "s#%SYSTEM%#$SYSTEM#g" \
+  | sed "s#%LDFLAGS%#$LDFLAGS#g" \
   > makefile
 
 exit

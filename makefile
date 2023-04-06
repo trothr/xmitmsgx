@@ -16,8 +16,10 @@ SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
 
 ##### configuration #####
 
-CFLAGS          =       -fPIC
 PREFIX          =       /usr
+CFLAGS          =        -fPIC -DPREFIX=\"$(PREFIX)\"
+LDFLAGS         =       
+# we may later use CC, CXX, CPP, CPPFLAGS, and/or CXXFLAGS
 
 ##### configuration #####
 
@@ -41,7 +43,7 @@ libxmitmsgx.a:  xmitmsgx.o
 libxmitmsgxdyn.so:  xmitmsgx.o
 #		$(LD) -shared -o $@ $+
 #		$(CC) -shared -o $@ $+
-		$(CC) -shared -o libxmitmsgxdyn.so xmitmsgx.o
+		$(CC) $(LDFLAGS) -shared -o libxmitmsgxdyn.so xmitmsgx.o
 
 # this object is the library
 xmitmsgx.o:     makefile xmitmsgx.c xmitmsgx.h
@@ -60,7 +62,7 @@ xmitmsgx.h:
 # this target is left over from the original POSIX implementation
 xmitmsg:	makefile xmitmsg.o xmitmsgx.o
 #		$(CC) -o xmitmsg xmitmsg.o -L. -lxmitmsgx
-		$(CC) -o xmitmsg xmitmsg.o xmitmsgx.o
+		$(CC) $(LDFLAGS) -o xmitmsg xmitmsg.o xmitmsgx.o
 #		strip xmitmsg
 
 xmitmsg.o:      makefile xmitmsg.c xmitmsgx.h
@@ -74,7 +76,7 @@ xmitmsg.c:
 # 'xmiterr' is a utility program which reports ERRNO messages
 xmiterr:	makefile xmiterr.o xmitmsgx.o
 #		$(CC) -o xmiterr xmiterr.o -L. -lxmitmsgx
-		$(CC) -o xmiterr xmiterr.o xmitmsgx.o
+		$(CC) $(LDFLAGS) -o xmiterr xmiterr.o xmitmsgx.o
 
 # object deck for the 'xmiterr' program
 xmiterr.o:      makefile xmiterr.c xmitmsgx.h
@@ -90,7 +92,7 @@ libraries:  libxmitmsgx.a libxmitmsgxdyn.so
 
 xmsgtest:	makefile xmsgtest.o xmitmsgx.o
 #		$(CC) -o xmsgtest xmsgtest.o -L. -lxmitmsgx
-		$(CC) -o xmsgtest xmsgtest.o xmitmsgx.o
+		$(CC) $(LDFLAGS) -o xmsgtest xmsgtest.o xmitmsgx.o
 
 xmsgtest.o:     makefile xmsgtest.c xmitmsgx.h
 		$(CC) $(CFLAGS) -o xmsgtest.o -c xmsgtest.c
@@ -120,10 +122,10 @@ test-xmsgtest:	xmsgtest
 
 test-libraries:  libxmitmsgx.a libxmitmsgxdyn.so xmsgtest.o
 		@echo "$(MAKE): testing static library"
-		$(CC) -o xmsgtest xmsgtest.o -L. -lxmitmsgx
+		$(CC) $(LDFLAGS) -o xmsgtest xmsgtest.o -L. -lxmitmsgx
 		./xmsgtest
 		@echo "$(MAKE): testing shared library"
-		$(CC) -o xmsgtest xmsgtest.o -L. -lxmitmsgxdyn
+		$(CC) $(LDFLAGS) -o xmsgtest xmsgtest.o -L. -lxmitmsgxdyn
 		sh -c ' LD_LIBRARY_PATH=. ; export LD_LIBRARY_PATH ; exec ./xmsgtest '
 
 #
@@ -192,5 +194,7 @@ clean:
 			msgtest xmsgtest xfortune xmiterr xmitmsg \
 			xmitmsgx.spec
 		rm -rf rpmbuild.d
+
+distclean:      clean
 
 

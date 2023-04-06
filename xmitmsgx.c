@@ -80,7 +80,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 //printf("xmopen(): trying %s\n",locale);
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); }
 //printf("xmopen(): stat() returned %d\n",rc);
 
@@ -91,7 +91,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
  { *p = 0x00;
 //printf("xmopen(): trying %s\n",ms->locale);
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); } }
 //printf("xmopen(): stat() returned %d\n",rc);
 
@@ -99,7 +99,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     if (rc != 0 && (locale = getenv("LC_ALL")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); }
 
     /* if that didn't work then try removing locale dotted qualifier  */
@@ -107,14 +107,14 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
       if (*p != 0x00) { *p = 0x00;
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); } }
 
     /* if that didn't work then try LC_CTYPE environment variable     */
     if (rc != 0 && (locale = getenv("LC_CTYPE")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); }
 
     /* if that didn't work then try removing locale dotted qualifier  */
@@ -122,14 +122,14 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
       if (*p != 0x00) { *p = 0x00;
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); } }
 
     /* if that didn't work then try the LOCALE environment variable   */
     if (rc != 0 && (locale = getenv("LOCALE")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); }
 
     /* if that didn't work then try removing locale dotted qualifier  */
@@ -137,7 +137,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
       if (*p != 0x00) { *p = 0x00;
       (void) snprintf(filename,sizeof(filename)-1,
-        "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); } }
 
     /* if we can't find the file then return the best error we know   */

@@ -8,6 +8,7 @@
     makefile.in         the build logic, master file
     configure           createse makefile from makefile.in
     CMakeLists.txt      for building with CMake, if you must
+    install.sh          installation script to help with CMake builds
     rpmbuild.sh         to create an RPM if you're on a Linux system
     xmitmsgx.spec.in    package specification used by RPM
     xmsgtest.c          primary test program
@@ -20,10 +21,11 @@
     Members.md          list of members in the MSGSTRUCT struct
     SYSLOG.md           correlation between 'xmitmsg' and SYSLOG
 
-    errno.en_US.msgs    (deprecated, delete from git, see errno.msgs)
     errno.sh            a utility script to gather errno constants
-    xmitmsgx.en_US.msgs  (deprecated, delete from git, see xmitmsgx.msgs)
     xmitmsgx.history    as the name implies
     xmitmsgx.license    as the name implies
+
+    xmitmivp.c          installation verification program
+    xmitmivp.sh         installation verification program
 
 
