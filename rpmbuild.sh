@@ -16,7 +16,7 @@ STAGING=`pwd`/rpmbuild.d
 
 # I wish the following were not hard-coded
 APPLID=xmitmsgx
-VERSION=2.1.0
+VERSION=2.1.1
 
 # configure the package normally
 ./configure

@@ -9,7 +9,7 @@
 #
 
 APPLID          =       xmitmsgx
-VERSION         =       2.1.0
+VERSION         =       2.1.1
 
 DELIVERABLES    =       xmitmsg xmiterr libxmitmsgx.a libxmitmsgxdyn.so
 SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
