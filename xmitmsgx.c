@@ -77,26 +77,22 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
     /* if that didn't work then try taking locale from LANG variable  */
     if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
-//printf("xmopen(): trying %s\n",locale);
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); }
-//printf("xmopen(): stat() returned %d\n",rc);
 
     /* if that didn't work then try removing locale dotted qualifier  */
     if (rc != 0) {
       for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
       if (*p != 0x00)
  { *p = 0x00;
-//printf("xmopen(): trying %s\n",ms->locale);
       (void) snprintf(filename,sizeof(filename)-1,
         "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
         rc = stat(filename,&statbuf); } }
-//printf("xmopen(): stat() returned %d\n",rc);
 
-    /* if that didn't work then try locale from LC_ALL variable       */
-    if (rc != 0 && (locale = getenv("LC_ALL")) != NULL && *locale != 0x00) {
+    /* if that didn't work then try LC_CTYPE environment variable     */
+    if (rc != 0 && (locale = getenv("LC_CTYPE")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
@@ -111,7 +107,22 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
         rc = stat(filename,&statbuf); } }
 
     /* if that didn't work then try LC_CTYPE environment variable     */
-    if (rc != 0 && (locale = getenv("LC_CTYPE")) != NULL && *locale != 0x00) {
+    if (rc != 0 && (locale = getenv("LC_MESSAGES")) != NULL && *locale != 0x00) {
+      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
+      (void) snprintf(filename,sizeof(filename)-1,
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+        rc = stat(filename,&statbuf); }
+
+    /* if that didn't work then try removing locale dotted qualifier  */
+    if (rc != 0) {
+      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
+      if (*p != 0x00) { *p = 0x00;
+      (void) snprintf(filename,sizeof(filename)-1,
+        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+        rc = stat(filename,&statbuf); } }
+
+    /* if that didn't work then try locale from LC_ALL variable       */
+    if (rc != 0 && (locale = getenv("LC_ALL")) != NULL && *locale != 0x00) {
       (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
       (void) snprintf(filename,sizeof(filename)-1,
         "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
@@ -142,37 +153,29 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
     /* if we can't find the file then return the best error we know   */
     if (rc != 0)
-//    { if (msglobal != NULL) xmclose(msglobal);         // CHECK
       { if (errno != 0) return errno; else return rc; }
     /* There happens to be message number 813 for this condition.     */
 
-//printf("xmopen(): trying malloc()\n");
     /* allocate memory to hold the message repository source file     */
     filesize = statbuf.st_size;          /* total file size, in bytes */
     memsize = filesize + sizeof(filename) + 16;        /* add and pad */
     ms->msgdata = malloc(memsize);
     if (ms->msgdata == NULL)
-//    { if (msglobal != NULL) xmclose(msglobal);                // CHECK
       { if (errno != 0) return errno; else return ENOMEM; }
 
-//printf("xmopen(): trying open(%s,)\n",filename);
     /* open the message repository */
     rc = fd = open(filename,O_RDONLY);
     if (rc < 0)
       { (void) free(ms->msgdata); ms->msgdata = NULL;
-//      if (msglobal != NULL) xmclose(msglobal);                // CHECK
         if (errno != 0) return errno; else return EBADF; }
 
-//printf("xmopen(): trying read()\n");
     /* read the file into the buffer */
     rc = read(fd,ms->msgdata,filesize);
     (void) close(fd);
     if (rc < 0)
       { (void) free(ms->msgdata); ms->msgdata = NULL;
-//      if (msglobal != NULL) xmclose(msglobal);                // CHECK
         if (errno != 0) return errno; else return EBADF; }
 
-//printf("xmopen(): concatenation()\n");
     /* put filename at end of buffer */
     p = &ms->msgdata[rc]; *p++ = 0x00;
     (void) strncpy(p,filename,sizeof(filename)-1);
@@ -182,12 +185,10 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     ms->msgtable = malloc(163840);
     if (ms->msgtable == NULL)
       { (void) free(ms->msgdata); ms->msgdata = NULL;
-//      if (msglobal != NULL) xmclose(msglobal);                // CHECK
         if (errno != 0) return errno; else return ENOMEM; }
     /* make sure we have clean pointers (all NULLs) */
     (void) memset(ms->msgtable,0x00,163840);
 
-//printf("xmopen(): parsing()\n");
     /* parse the file */
     p = ms->msgdata;
     ms->msgmax = 0;
@@ -218,7 +219,6 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
       }
 
-//printf("xmopen(): finishing I()\n");
     /* use basename of the file as the applic */
     p = (unsigned char*) basename(ms->msgfile);
     (void) strncpy(ms->applid,p,sizeof(ms->applid)-1);
@@ -240,9 +240,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
       openlog(ms->applid,LOG_PID,LOG_USER); }
 
     /* default "caller" is the user, but is better as a function name */
-//  if (ms->caller == NULL || *ms->caller == 0x00) ms->caller = getenv("LOGNAME");
 
-//printf("xmopen(): finishing II()\n");
     /* force clear other elements of the struct */
     ms->msgnum = 0;
     ms->msgc = 0;   ms->msgv = NULL;

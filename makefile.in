@@ -9,7 +9,7 @@
 #
 
 APPLID          =       xmitmsgx
-VERSION         =       2.1.1
+VERSION         =       2.1.2
 
 DELIVERABLES    =       xmitmsg xmiterr libxmitmsgx.a libxmitmsgxdyn.so
 SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
@@ -132,12 +132,13 @@ test-libraries:  libxmitmsgx.a libxmitmsgxdyn.so xmsgtest.o
 # yeah, we need an "install" target
 install:        $(DELIVERABLES) xmitmsgx.msgs errno.msgs
 		@mkdir -p $(PREFIX)/bin $(PREFIX)/lib $(PREFIX)/include \
-			$(PREFIX)/share/locale/en_US # $(PREFIX)/src
+		  $(PREFIX)/share/locale/en_US $(PREFIX)/sbin $(PREFIX)/src
 		cp -p xmitmsg xmiterr $(PREFIX)/bin/.
 		cp -p libxmitmsgx.a libxmitmsgxdyn.so $(PREFIX)/lib/.
 		cp -p xmitmsgx.h $(PREFIX)/include/.
 		cp -p xmitmsgx.msgs errno.msgs $(PREFIX)/share/locale/en_US/.
-#		cp -p *.c *.h makefile $(PREFIX)/src/.
+		cp -p xmitmivp.sh $(PREFIX)/sbin/.
+		cp -p xmitmivp.c $(PREFIX)/src/.
 
 #
 # http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html

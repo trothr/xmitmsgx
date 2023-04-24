@@ -11,8 +11,8 @@
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.1.1 */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((1) << 8) + (0))
+/* xmitmsgx-2.1.2 */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((2) << 8) + (0))
 
 /* priorities (these are ordered)                                     */
 /*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
@@ -34,6 +34,8 @@
 #define  MSGERR_NOLIB     813
 #define  MSGERR_NOMSG     814
 
+static int xmitmsgx_version = XMITMSGX_VERSION;
+
 typedef struct MSGSTRUCT
   {
     int  msgnum;                /* message number */
@@ -41,29 +43,45 @@ typedef struct MSGSTRUCT
     unsigned char **msgv;       /* vector of replacement tokens */
     unsigned char *msgbuf;      /* buffer supplied by caller */
     int  msglen;                /* buffer size on input, msg size on return */
+// possible alignment
     unsigned char *msgtext;     /* offset past msg code/header */
+// 40
+// integers are still only 4 bytes on 64-bit systems, though pointers are 8 bytes
+// and don't forget about alignment
 
     int  msgfmt;        /* message format number (for future use) */
     int  msgline;       /* message line number (for future use, zero means all lines) */
     int  msglevel;      /* message level/serverity (zero means use the letter in the file) */
     int  msgopts;       /* set by xmopen(), sometimes overridden for xmmake() */
+// 56
 
     /* the following are probably not for external use */
     unsigned char *caller;       /* default is getenv("LOGNAME") roughly, msgu */
     unsigned char *prefix;       /* default is applid[0..2]||caller[0..2] */
     unsigned char *letter;       /* default taken from message file */
+// 80
 
     /* the following are filled in by xmopen() not for external use */
     int  msgmax;                /* highest message number in table */
+// possible alignment
     unsigned char **msgtable;   /* array of messages (allocated memory) */
     unsigned char *msgdata;     /* messages file content (allocated memory) */
     unsigned char *msgfile;     /* name of message file found (for reference and debugging) */
     unsigned char *escape;      /* the escape character (for reference and debugging) */
+// 120
 
     unsigned char  pfxmaj[4];   /* truncated up-cased applid/major */
     unsigned char  pfxmin[4];   /* truncated up-cased caller/minor */
     unsigned char  locale[32];  /* possibly truncated to match the nearest file found */
     unsigned char  applid[32];  /* default is basename of messages file, used as SYSLOG identity */
+// 192
+
+    int  version;               /* version of the library when struct is initialized */
+// possible alignment
+    void *next;                 /* pointer to next in chain or NULL */
+    void *prev;                 /* pointer to previous in chain (first is NULL) */
+    unsigned char  msgmsgic[16];  /* filled-in with "MSGSTRUCT" when initialized */
+// 232
 
   } MSGSTRUCT;
 
@@ -102,10 +120,10 @@ extern int xm_negative(int);
 #endif
 
 /* some example formats (for future use)
-00 standard message
-01 explanation
-02 user action
-03 mnemonics or symbolics
+01 standard message
+02 explanation
+03 user action
+04 mnemonics or symbolics
  */
 
 

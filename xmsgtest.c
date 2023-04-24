@@ -15,7 +15,7 @@
 int main()
   {
     int rc, msgc, msgn, msgo;
-    unsigned char buffer[256], *msgv[16];
+    unsigned char buffer[256], *msgv[16], *_p;
     struct MSGSTRUCT teststruct;
 
     msgc = 4;
@@ -29,6 +29,13 @@ int main()
     /** report version ************************************************/
     (void) printf("xmsgtest: xmitmsgx version %d.%d.%d\n",
       (XMITMSGX_VERSION>>24),(XMITMSGX_VERSION>>16)&0xFF,(XMITMSGX_VERSION>>8)&0xFF);
+    (void) printf("xmsgtest: size of MSGSTRUCT is %d bytes\n",sizeof(teststruct));
+    (void) printf("xmsgtest: - size of integer is %d\n",sizeof(rc));
+    (void) printf("xmsgtest: - size of pointer is %d\n",sizeof(_p));
+    (void) printf("xmsgtest: xmitmsgx version %d.%d.%d\n",
+       (xmitmsgx_version>>24),
+      ((xmitmsgx_version>>16)&0xFF),
+      ((xmitmsgx_version>>8)&0xFF));
 
     /** test xmopen() ************************************************/
     (void) memset(&teststruct,0x00,sizeof(teststruct));
