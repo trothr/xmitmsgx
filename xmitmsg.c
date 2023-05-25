@@ -14,6 +14,7 @@
 #include <strings.h>
 
 #include <stdio.h>
+#include <errno.h>
 
 #define MSGMAX 16
 
@@ -64,7 +65,8 @@ int main(int argc,char*argv[])
     rc = xmopen(applid,0,ms);
     /* But if that failed try to report *why* it failed.              */
     if (rc != 0)
-      { xmopen("xmitmsgx",0,NULL); msgv[1] = applid;
+      { perror("xmopen()");
+        xmopen("xmitmsgx",0,NULL); msgv[1] = applid;
         (void) xmprint(813,2,msgv,0,NULL);
         (void) xmclose(NULL); return 1; }
 

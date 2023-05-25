@@ -26,15 +26,19 @@ while [ ! -z "$*" ] ; do
   shift
 done
 
+LOCDIR=$PREFIX/share/locale
 #
 US=`uname -s | sed 's#/##g'`
 UM=`uname -m | sed 's#^i.86$#i386#' | sed 's#^armv.l$#arm#'`
 case "$US" in
   Linux|FreeBSD)
     CFLAGS="$CFLAGS -fPIC"
+#   LDFLAGS=
+    SHFLAGS="$LDFLAGS -shared"
     ;;
   CYGWIN*)
     US="CYGWIN"
+    SHFLAGS="$LDFLAGS -shared"
     ;;
   SunOS|AIX)
     UM=`uname -p`
@@ -42,38 +46,51 @@ case "$US" in
   OS390)
     UM="s390x" # guessing! since both "s390x" and "s390" are viable
     CC="xlc"
-    LDFLAGS="-O -qxplink -qdll"
+    LDFLAGS="-O -qxplink"
+    SHFLAGS="$LDFLAGS -qdll"
+#   LOCDIR=$PREFIX/lib/nls/msg
     ;;
 esac
 
+#/usr/share/locale/
+#/usr/lib/nls/msg/
+#/usr/share/nls/
+#LOCALE=en_US.UTF-8
+#LOCALE=en_US
+
 SYSTEM="$US-$UM"
 
+# create proper makefile from reference input
 cat makefile.in \
   | sed "s#%CFLAGS%#$CFLAGS#g" \
   | sed "s#%PREFIX%#$PREFIX#g" \
   | sed "s#%SYSTEM%#$SYSTEM#g" \
   | sed "s#%LDFLAGS%#$LDFLAGS#g" \
+  | sed "s#%SHFLAGS%#$SHFLAGS#g" \
+  | sed "s#%LOCDIR%#$LOCDIR#g" \
   > makefile
+
+# create configuration header file
+rm -f xmmconfig.tmp
+echo "CFLAGS=#$CFLAGS#"  >> xmmconfig.tmp
+echo "PREFIX=#$PREFIX#"  >> xmmconfig.tmp
+echo "SYSTEM=#$SYSTEM#"  >> xmmconfig.tmp
+echo "LDFLAGS=#$LDFLAGS#" >> xmmconfig.tmp
+echo "SHFLAGS=#$SHFLAGS#" >> xmmconfig.tmp
+echo "LOCDIR=#$LOCDIR#"  >> xmmconfig.tmp
+sed 's/#/"/g' < xmmconfig.tmp > xmmconfig.h
+sed 's/#/"/g' < xmmconfig.tmp > xmmconfig.sh ; chmod a+x xmmconfig.sh
+rm xmmconfig.tmp
 
 exit
 
 
-
-
-
-
-
 FreeBSD:
-
-make a shared library
-/usr/bin/cc -fPIC -shared -Wl,-soname,libxmitmsgxdyn.so -o libxmitmsgxdyn.so CMakeFiles/xmitmsgxdyn.dir/xmitmsgx.c.o 
-
-make a static library
-/usr/bin/ar qc libxmitmsgx.a CMakeFiles/xmitmsgx.dir/xmitmsgx.c.o
-/usr/bin/ranlib libxmitmsgx.a
-
-
-
+ make a shared library:
+  /usr/bin/cc -fPIC -shared -Wl,-soname,libxmitmsgxdyn.so -o libxmitmsgxdyn.so CMakeFiles/xmitmsgxdyn.dir/xmitmsgx.c.o
+ make a static library:
+  /usr/bin/ar qc libxmitmsgx.a CMakeFiles/xmitmsgx.dir/xmitmsgx.c.o
+  /usr/bin/ranlib libxmitmsgx.a
 
 
 CMAKE_SHARED_LINKER_FLAGS

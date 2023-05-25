@@ -27,17 +27,20 @@ The message will be null-terminated if the buffer is large enough.
 
 * msglen
 
-`msglen` is the size of the buffer pointed to by `msgbuf`.
+`msglen` is an integer indicating the size of the buffer pointed to by `msgbuf`.
 
-Upon return, `xmmake()` will have put the length of the resulting message into this field.
+Upon return, `xmmake()` will have put the length of the resulting message
+into this field.
 
 ## Optional Supplied by Caller
 
 * msglevel
 
-`msglevel` indicates a SYSLOG level for supplemental functions in the library 
-(e.g. `xmprint()`). A default of zero instructs `xmmake()` to use the message
-severity letter in the message source file and not alter the severity.
+`msglevel` is an integer indicating a SYSLOG level for supplemental functions
+in the library (e.g. `xmprint()`). A default of zero instructs `xmmake()`
+to use the message severity letter in the message source file and not alter
+the severity.
+
 A `msglevel` value of zero collides with SYSLOG "panic"; this is intentional.
 
 

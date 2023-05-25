@@ -9,23 +9,26 @@
 #
 
 APPLID          =       xmitmsgx
-VERSION         =       2.1.1
+VERSION         =       2.1.3
 
 DELIVERABLES    =       xmitmsg xmiterr libxmitmsgx.a libxmitmsgxdyn.so
 SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
+LOCALE          =       en_US
 
 ##### configuration #####
 
 PREFIX          =       /usr
 CFLAGS          =        -fPIC -DPREFIX=\"$(PREFIX)\"
 LDFLAGS         =       
+SHFLAGS         =        -shared
 # we may later use CC, CXX, CPP, CPPFLAGS, and/or CXXFLAGS
 
 ##### configuration #####
 
 # first target serves as the default, but name it that way anyway
-_default:	xmsgtest
-		./xmsgtest
+#_default:	xmsgtest
+#		./xmsgtest
+_default:	$(DELIVERABLES)
 
 all:		$(DELIVERABLES)
 
@@ -102,6 +105,17 @@ xmsgtest.c:
 		@echo "$(MAKE): you need $@"
 		wget $(SOURCEURL)/$@
 
+
+# Rexx support
+rexx:           libxmmrexx.so
+
+xmmrexx.o:      makefile xmmrexx.c xmitmsgx.h
+		$(CC) $(CFLAGS) -o xmmrexx.o -c xmmrexx.c
+
+libxmmrexx.so:  xmmrexx.o xmitmsgx.o
+		$(CC) $(LDFLAGS) -shared -o libxmmrexx.so xmmrexx.o xmitmsgx.o
+
+
 # pseudo target to run tests
 tests:		test-xmitmsg test-xmiterr test-xmsgtest
 		@echo "$(MAKE): ##### all tests passed, whoop! #####"
@@ -111,7 +125,6 @@ test-xmitmsg:   xmitmsg
 		./xmitmsg 408
 
 # arbitrarily drive several ERRNO messages by number
-# might need 'LANG=en_US ; export LANG' until smarter file search
 test-xmiterr:	xmiterr
 		./xmiterr 123
 		./xmiterr 77
@@ -132,12 +145,13 @@ test-libraries:  libxmitmsgx.a libxmitmsgxdyn.so xmsgtest.o
 # yeah, we need an "install" target
 install:        $(DELIVERABLES) xmitmsgx.msgs errno.msgs
 		@mkdir -p $(PREFIX)/bin $(PREFIX)/lib $(PREFIX)/include \
-			$(PREFIX)/share/locale/en_US # $(PREFIX)/src
+		  $(PREFIX)/share/locale/$(LOCALE) $(PREFIX)/sbin $(PREFIX)/src
 		cp -p xmitmsg xmiterr $(PREFIX)/bin/.
 		cp -p libxmitmsgx.a libxmitmsgxdyn.so $(PREFIX)/lib/.
 		cp -p xmitmsgx.h $(PREFIX)/include/.
-		cp -p xmitmsgx.msgs errno.msgs $(PREFIX)/share/locale/en_US/.
-#		cp -p *.c *.h makefile $(PREFIX)/src/.
+		cp -p xmitmsgx.msgs errno.msgs $(PREFIX)/share/locale/$(LOCALE)/.
+		cp -p xmitmivp.sh $(PREFIX)/sbin/.
+		cp -p xmitmivp.c $(PREFIX)/src/.
 
 #
 # http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html
@@ -167,6 +181,7 @@ xmitmsgx.spec.in:
 
 #
 makefile:	makefile.in
+		@echo "$(MAKE): makefile is out of synch"
 		@echo "$(MAKE): you need to re-run ./configure"
 		@false
 
@@ -196,5 +211,8 @@ clean:
 		rm -rf rpmbuild.d
 
 distclean:      clean
+		rm -f xmmconfig.h xmmconfig.sh
+
+veryclean:      distclean
 
 

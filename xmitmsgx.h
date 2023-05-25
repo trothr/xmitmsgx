@@ -11,8 +11,8 @@
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.1.2 */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((2) << 8) + (0))
+/* xmitmsgx-2.1.3 */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((3) << 8) + (0))
 
 /* priorities (these are ordered)                                     */
 /*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
@@ -87,26 +87,26 @@ typedef struct MSGSTRUCT
 
 /* Open the messages file, read it, get ready for service. */
 extern int xmopen(unsigned char*,int,struct MSGSTRUCT*);
-/* filename, opts, MSGSTRUCT */
-/* Specify a syslog ident via applid in MSGSTRUCT. */
-/* specify a syslog facility via optional MSGSTRUCT */
+/* args: filename, opts, MSGSTRUCT */
 // calls xminit()
 // may call openlog(char*ident,int option,int facility)
+/* Specify a syslog ident via applid in MSGSTRUCT. */
+/* specify a syslog facility via optional MSGSTRUCT */
 
 /* This is the heart of the utility. */
 extern int xmmake(struct MSGSTRUCT*);
 
 /* Print to stdout or stderr depending on level, optionally syslog. */
 extern int xmprint(int,int,unsigned char*[],int,struct MSGSTRUCT*);
-/* msgnum, msgc, msgv, opts */
+/* args: msgnum, msgc, msgv, opts */
 
 /* Write to file descriptor, optionally syslog. */
 extern int xmwrite(int,int,int,unsigned char*[],int,struct MSGSTRUCT*);
-/* fd, msgnum, msgc, msgv, opts */
+/* args: fd, msgnum, msgc, msgv, opts */
 
 /* Generate a message and store it as a string. */
 extern int xmstring(unsigned char*,int,int,int,unsigned char*[],struct MSGSTRUCT*);
-/* output, outlen, msgnum, msgc, msgv */
+/* args: output, outlen, msgnum, msgc, msgv */
 
 /* Clear the message repository struct. */
 extern int xmclose(struct MSGSTRUCT*);

@@ -1,7 +1,7 @@
 /*
  *
  *        Name: xmitmsgx.c (C program source)
- *              library of functions for XMITMSGX package
+ *              library of functions for the XMITMSGX package
  *      Author: Rick Troth, rogue programmer
  *        Date: 2017-Nov-25 (Sat) Thanksgiving 2017
  *
@@ -24,12 +24,51 @@
 
 #include "xmitmsgx.h"
 
-struct MSGSTRUCT *msglobal = NULL, msstatic;
+/* These are the locale environment variables we will interrogate:    */
+char *localevars[] = {
+                "LANG",
+                "LC_CTYPE",
+                "LC_MESSAGES",
+                "LC_ALL",
+/*              "LC_COLLATE",         */
+/*              "LC_TIME",            */
+/*              "LC_NUMERIC",         */
+/*              "LC_MONETARY",        */
+                "LOCALE",
+                ""          /* empty string marks the end of the list */
+                     };
+
+/* These are the directories where we might find locale support:
+
+                 /usr/share/locale/%s/%s.msgs
+                 /usr/lib/nls/msg/%s/%s.msgs
+                 /usr/lib/locale/%s/%s.msgs
+                 /usr/share/nls/%s/%s.msgs
+
+   The xmopen() routine will search all of the above. We do not use
+   a per-platform single path because any given platform might have
+   multiple locale directories and paths.
+
+   X11 locale directories are not searched because their content is different.
+
+   Examples:
+      /usr/share/locale/en_US/%s.msgs           locale=en_US
+      /usr/lib/locale/en_US.UTF-8/%s.msgs       locale=en_US.UTF-8
+      /usr/lib/locale/en_US.ISO8859-1/%s.msgs   locale=en_US.ISO8859-1
+
+ */
+
+static struct MSGSTRUCT *msglobal = NULL, msstatic;
 
 /* ---------------------------------------------------------------- OPEN
  * Open the messages file, read it, get ready for service.
  * Returns: zero upon successful operation, or 813 if cannot open the repository file
  * The VM/CMS counterpart does 'SET LANG' to load the messages file.
+ * See also the catopen() call on many POSIX systems.
+ *
+ * The first thing we must do is find and open the message repository.
+ * This routine looks in several places using a variety of names.
+ * If we cannot find the messages file then we cannot proceed.
  */
 int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
   {
@@ -44,6 +83,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     if (ms == NULL && msglobal != NULL) return EBUSY;
     if (ms == NULL) { rc = xmopen(file,opts,&msstatic);
         if (rc != 0) return rc; msglobal = &msstatic; return 0; }
+    /* we can only do this once and it makees things not thread-safe  */
 
     /* prepare to search for the message repository                   */
     ms->msgdata = NULL;
@@ -52,104 +92,151 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     (void) memset(ms->locale,0x00,sizeof(ms->locale));
     (void) memset(ms->applid,0x00,sizeof(ms->applid));
 
-    /* try the file directly as if full name was supplied             */
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s.msgs",file);
-      filename[sizeof(filename)-1] = 0x00;
-      rc = stat(filename,&statbuf);
+    /* try the file directly as if full name was supplied (sans ext)  */
+    (void) snprintf(filename,sizeof(filename)-1,
+                "%s.msgs",file);
+    filename[sizeof(filename)-1] = 0x00;
+//intf("trying %s\n",filename);                              // DELETEME
+    rc = stat(filename,&statbuf);
+
+    i = 0;                                     /* localevars loop top */
+    while (*localevars[i] != 0x00) {
+
+    /* if that didn't work then try filename plus locale variables    */
+    if (rc != 0) {
+        locale = getenv(localevars[i]);
+        if (locale != NULL && *locale != 0x00) {
+            (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
+
+            (void) snprintf(filename,sizeof(filename)-1,
+                "%s.%s.msgs",file,ms->locale);
+            filename[sizeof(filename)-1] = 0x00;
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+
+            /* if that didn't work then try removing locale dot qual  */
+            if (rc != 0) {
+                for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
+                if (*p != 0x00) { *p = 0x00;
+
+            (void) snprintf(filename,sizeof(filename)-1,
+                "%s.%s.msgs",file,ms->locale);
+            filename[sizeof(filename)-1] = 0x00;
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); } }
+                 }
+
+        i++; }                                 /* localevars loop end */
+
+    /* beyond this point, ignore any prepended path info              */
     file = basename(file);
 
-    /* if that didn't work then try filename plus LANG variable       */
-    if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
-      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s.%s.msgs",file,ms->locale);
-        rc = stat(filename,&statbuf); }
-    /* for the time being, we do not repeat this for all locale vars  */
+    /* NOTE: in the following several stanzas, we attempt variations  *
+     *       with several standard locations for locale content       */
 
-    /* if that didn't work then try removing locale dotted qualifier  */
+    i = 0;                                     /* localevars loop top */
+    while (*localevars[i] != 0x00) {
+
+    /* if that didn't work then try finding locale in standard places */
     if (rc != 0) {
-      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
-      if (*p != 0x00) { *p = 0x00;
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s.%s.msgs",file,ms->locale);
-        rc = stat(filename,&statbuf); } }
+        locale = getenv(localevars[i]);
+        if (locale != NULL && *locale != 0x00) {
+            (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
 
-    /* if that didn't work then try taking locale from LANG variable  */
-    if (rc != 0 && (locale = getenv("LANG")) != NULL && *locale != 0x00) {
-      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); }
+            (void) snprintf(filename,sizeof(filename)-1,
+                "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf);
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/lib/nls/msg/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/lib/locale/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/share/nls/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try removing locale dotted qualifier  */
+            /* if that didn't work then try removing locale dot qual  */
+            if (rc != 0) {
+                for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
+                if (*p != 0x00) { *p = 0x00;
+
+            (void) snprintf(filename,sizeof(filename)-1,
+                "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf);
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/lib/nls/msg/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/lib/locale/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/share/nls/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+
+                                    }
+                         }
+                                        } }
+        i++; }                                 /* localevars loop end */
+
     if (rc != 0) {
-      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
-      if (*p != 0x00)
- { *p = 0x00;
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); } }
+        locale = "C";
+            (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
 
-    /* if that didn't work then try LC_CTYPE environment variable     */
-    if (rc != 0 && (locale = getenv("LC_CTYPE")) != NULL && *locale != 0x00) {
-      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); }
+            (void) snprintf(filename,sizeof(filename)-1,
+                "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf);
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/share/locale/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/lib/nls/msg/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/lib/locale/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
+            if (rc != 0) {
+            (void) snprintf(filename,sizeof(filename)-1,
+                "/usr/share/nls/%s/%s.msgs",ms->locale,file);
+//intf("trying %s\n",filename);                              // DELETEME
+            rc = stat(filename,&statbuf); }
 
-    /* if that didn't work then try removing locale dotted qualifier  */
-    if (rc != 0) {
-      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
-      if (*p != 0x00) { *p = 0x00;
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); } }
+            /* If this had been an environmentally supplied locale    */
+            /* then we would remove any dotted qualifier here         */
+            /* and re-drive the myriad stat() calls.                  */
 
-    /* if that didn't work then try LC_CTYPE environment variable     */
-    if (rc != 0 && (locale = getenv("LC_MESSAGES")) != NULL && *locale != 0x00) {
-      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); }
-
-    /* if that didn't work then try removing locale dotted qualifier  */
-    if (rc != 0) {
-      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
-      if (*p != 0x00) { *p = 0x00;
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); } }
-
-    /* if that didn't work then try locale from LC_ALL variable       */
-    if (rc != 0 && (locale = getenv("LC_ALL")) != NULL && *locale != 0x00) {
-      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); }
-
-    /* if that didn't work then try removing locale dotted qualifier  */
-    if (rc != 0) {
-      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
-      if (*p != 0x00) { *p = 0x00;
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); } }
-
-    /* if that didn't work then try the LOCALE environment variable   */
-    if (rc != 0 && (locale = getenv("LOCALE")) != NULL && *locale != 0x00) {
-      (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); }
-
-    /* if that didn't work then try removing locale dotted qualifier  */
-    if (rc != 0) {
-      for (p = ms->locale; *p != 0x00 && *p != '.'; p++);
-      if (*p != 0x00) { *p = 0x00;
-      (void) snprintf(filename,sizeof(filename)-1,
-        "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-        rc = stat(filename,&statbuf); } }
+                 }
 
     /* if we can't find the file then return the best error we know   */
     if (rc != 0)
@@ -369,9 +456,9 @@ int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUC
     if (ms->msgopts & MSGFLAG_SYSLOG) syslog(ms->msglevel,"%s",ms->msgbuf);
 
     if (ms->msglevel > 5)
-    rc = fprintf(stdout,"%s\n",ms->msgbuf);
-    else
-    rc = fprintf(stderr,"%s\n",ms->msgbuf);
+    rc = fprintf(stdout,"%s\n",ms->msgbuf);   /* 5 and 6 are "normal" */
+    else                                      /* (and 7 is "debug")   */
+    rc = fprintf(stderr,"%s\n",ms->msgbuf);   /* 4, 3, 2, 1 "errors"  */
 
     return rc;
   }
@@ -514,4 +601,5 @@ int xm_negative(int n)
   { if (n < 0) return n;
           else return 0 - n;
   }
+
 

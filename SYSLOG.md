@@ -1,7 +1,7 @@
 # SYSLOG Correlation
 
 CMS 'XMITMSG' and in turn this "xmitmsgx" project uses severity levels.
-These aling nicely with SYSLOG priorities.
+These align nicely with SYSLOG priorities.
 
 ## IBM versus Unix
 
@@ -43,11 +43,5 @@ when initializing the `xmitmsgx` library.
 ## References
 
 /usr/include/sys/syslog.h
-
-
-
-
-
-
 
 

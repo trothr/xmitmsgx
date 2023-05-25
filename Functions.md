@@ -12,9 +12,9 @@ Returns: zero upon successful operation
 
 `xmopen` takes the following arguments
 
-filename: pointer to unsigned character string
-options: bitmask as an integer
-pointer to MSGSTRUCT or NULL
+filename: a pointer to unsigned character string
+options: a bitmask as an integer
+msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 You should supply a MSGSTRUCT to represent your message repository.
 If you supply NULL then xmopen() will attempt to use a global static
@@ -28,14 +28,14 @@ Returns: zero upon successful operation
 
 `xmmake` takes the following argument
 
-pointer to MSGSTRUCT
+msgstruct: a pointer to MSGSTRUCT
 
 While some functions will accept NULL for the MSGSTRUCT pointer,
 xmmake() does not.
 
-You must provide xmmake() with a buffer
-to hold the message, member `msgbuf`, and its length, `msglen`.
-The latter will be replaced with the size of the message.
+You must provide xmmake() with a buffer to hold the message, member
+`msgbuf`, and its length, `msglen`. The latter will be replaced with
+the size of the resulting message.
 
 * int xmprint(,,,,)
 
@@ -49,8 +49,8 @@ Return value does not reflect SYSLOG effects or errors.
 message number
 count of replacement tokens
 array of replacement tokens
-options: bitmask as an integer
-pointer to MSGSTRUCT or NULL
+options: a bitmask as an integer
+msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 * int xmwrite(,,,,,)
 
@@ -65,8 +65,8 @@ file descriptor
 message number
 count of replacement tokens
 array of replacement tokens
-options: bitmask as an integer
-pointer to MSGSTRUCT or NULL
+options: a bitmask as an integer
+msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 * int xmstring(,,,,,)
 
@@ -80,7 +80,7 @@ size of output buffer
 message number
 count of replacement tokens
 array of replacement tokens
-pointer to MSGSTRUCT or NULL
+msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 * int xmclose()
 
@@ -90,6 +90,6 @@ Returns: zero upon successful operation
 
 `xmclose` takes the following argument
 
-pointer to MSGSTRUCT or NULL
+msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 
