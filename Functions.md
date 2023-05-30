@@ -1,7 +1,13 @@
 # XMITMSGX Functions
 
+This page discusses the C functions in the XMITMSGX package.
+XMITMSGX is available for other langauges (Rexx at this time).
+
 The central function in the library is `xmmake()`.
 Other functions are derivatives for convenience and standarization.
+Calling `xmmake()` directly is more tedious and is not recommended.
+In other languages (than C) there is usually no direct interface
+to the `xmmake()` function, so don't worry about it.
 
 ## Routines in the Library
 

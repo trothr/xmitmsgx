@@ -147,7 +147,8 @@ install:        $(DELIVERABLES) xmitmsgx.msgs errno.msgs
 		@mkdir -p $(PREFIX)/bin $(PREFIX)/lib $(PREFIX)/include \
 		  $(PREFIX)/share/locale/$(LOCALE) $(PREFIX)/sbin $(PREFIX)/src
 		cp -p xmitmsg xmiterr $(PREFIX)/bin/.
-		cp -p libxmitmsgx.a libxmitmsgxdyn.so $(PREFIX)/lib/.
+#		cp -p libxmitmsgx.a libxmitmsgxdyn.so $(PREFIX)/lib/.
+		cp -p libxmitmsgx.a *.so $(PREFIX)/lib/.
 		cp -p xmitmsgx.h $(PREFIX)/include/.
 		cp -p xmitmsgx.msgs errno.msgs $(PREFIX)/share/locale/$(LOCALE)/.
 		cp -p xmitmivp.sh $(PREFIX)/sbin/.

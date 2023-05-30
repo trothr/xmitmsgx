@@ -57,6 +57,7 @@ rsync -a -u -x -H -O -S %SPEC_STAGING%/. $HOME/rpmbuild/BUILDROOT/xmitmsgx-%SPEC
 %SPEC_PREFIX%/bin/xmiterr
 %SPEC_PREFIX%/lib/libxmitmsgx.a
 %SPEC_PREFIX%/lib/libxmitmsgxdyn.so
+%SPEC_PREFIX%/lib/libxmmrexx.so
 %SPEC_PREFIX%/include/xmitmsgx.h
 %SPEC_PREFIX%/share/locale/en_US/xmitmsgx.msgs
 %SPEC_PREFIX%/share/locale/en_US/errno.msgs

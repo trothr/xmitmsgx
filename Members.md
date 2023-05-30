@@ -6,6 +6,10 @@ and the anchor for its operation is MSGSTRUCT.
 The MSGSTRUCT must be initialized by calling `xmopen()`
 before calling `xmmake()`.
 
+Altering the content of the MSGSTRUCT is generally only meaningful
+when using `xmmake()` directly, which is more complicated than using
+`xmprint()` or `xmstring()` or `xmwrite()`. Keep it simple.
+
 ## Required Supplied by Caller
 
 * msgnum
