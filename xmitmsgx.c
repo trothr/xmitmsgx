@@ -4,6 +4,7 @@
  *              library of functions for the XMITMSGX package
  *      Author: Rick Troth, rogue programmer
  *        Date: 2017-Nov-25 (Sat) Thanksgiving 2017
+ *              2023-April/May
  *
  *              This is a re-do after some time ... a very long time.
  *
@@ -96,7 +97,6 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
     (void) snprintf(filename,sizeof(filename)-1,
                 "%s.msgs",file);
     filename[sizeof(filename)-1] = 0x00;
-//intf("trying %s\n",filename);                              // DELETEME
     rc = stat(filename,&statbuf);
 
     i = 0;                                     /* localevars loop top */
@@ -111,7 +111,6 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
             (void) snprintf(filename,sizeof(filename)-1,
                 "%s.%s.msgs",file,ms->locale);
             filename[sizeof(filename)-1] = 0x00;
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
 
             /* if that didn't work then try removing locale dot qual  */
@@ -122,7 +121,6 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
             (void) snprintf(filename,sizeof(filename)-1,
                 "%s.%s.msgs",file,ms->locale);
             filename[sizeof(filename)-1] = 0x00;
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); } }
                  }
 
@@ -145,27 +143,22 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
             (void) snprintf(filename,sizeof(filename)-1,
                 "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf);
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/share/locale/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/lib/nls/msg/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/lib/locale/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/share/nls/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
 
             /* if that didn't work then try removing locale dot qual  */
@@ -175,27 +168,22 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
             (void) snprintf(filename,sizeof(filename)-1,
                 "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf);
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/share/locale/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/lib/nls/msg/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/lib/locale/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/share/nls/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
 
                                     }
@@ -209,27 +197,22 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
             (void) snprintf(filename,sizeof(filename)-1,
                 "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf);
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/share/locale/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/lib/nls/msg/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/lib/locale/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
                 "/usr/share/nls/%s/%s.msgs",ms->locale,file);
-//intf("trying %s\n",filename);                              // DELETEME
             rc = stat(filename,&statbuf); }
 
             /* If this had been an environmentally supplied locale    */
@@ -455,6 +438,7 @@ int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUC
     /* optionally route to SYSLOG */
     if (ms->msgopts & MSGFLAG_SYSLOG) syslog(ms->msglevel,"%s",ms->msgbuf);
 
+    if (ms->msgopts & MSGFLAG_NOPRINT) ; else
     if (ms->msglevel > 5)
     rc = fprintf(stdout,"%s\n",ms->msgbuf);   /* 5 and 6 are "normal" */
     else                                      /* (and 7 is "debug")   */

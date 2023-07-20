@@ -1,6 +1,6 @@
 /*
  *
- *        Name: xmitmsgx.h, "transmit message" for POSIX
+ *        Name: xmitmsgx.h (C header), "transmit message" for POSIX
  *              read and emit enumerated messages from the repository
  *      Author: Rick Troth, rogue programmer
  *        Date: 2014-May-01 (Thu)
@@ -11,8 +11,8 @@
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.1.3 */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((3) << 8) + (0))
+/* xmitmsgx-2.1.4            v2            r1            m4           */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((4) << 8) + (0))
 
 /* priorities (these are ordered)                                     */
 /*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
@@ -25,11 +25,14 @@
 /*      MSGLEVEL_EMERG           LOG_EMERG   0 reserved */
 
 /* the following are used by derivative functions, not by xmmake() itself */
-#define  MSGFLAG_SYSLOG   0x01   /* used by xmopen() to set-up logging */
+#define  MSGFLAG_SYSLOG   0x01   /* used by xmopen() to enable logging */
 #define  MSGFLAG_NOLOG    0x02   /* used by xmprint() and xmwrite() to skip logging */
 #define  MSGFLAG_NOCODE   0x04   /* means message text only, good for decorations */
 #define  MSGFLAG_NOPRINT  0x08   /* implies log only */
 /* what about time stamp? logging automtically has time stamping */
+
+#define  MSGFLAG_CODELEFT  0x10  /* default */
+#define  MSGFLAG_CODERIGHT  0x20  /* think Hebrew */
 
 #define  MSGERR_NOLIB     813
 #define  MSGERR_NOMSG     814
@@ -43,53 +46,53 @@ typedef struct MSGSTRUCT
     unsigned char **msgv;       /* vector of replacement tokens */
     unsigned char *msgbuf;      /* buffer supplied by caller */
     int  msglen;                /* buffer size on input, msg size on return */
-// possible alignment
+/* possible alignment                                                 */
     unsigned char *msgtext;     /* offset past msg code/header */
-// 40
-// integers are still only 4 bytes on 64-bit systems, though pointers are 8 bytes
-// and don't forget about alignment
+/* 40                                                                 */
+/* ints still only 4 bytes on 64-bit systems, though ptrs are 8 bytes */
+/* and don't forget about alignment                                   */
 
     int  msgfmt;        /* message format number (for future use) */
     int  msgline;       /* message line number (for future use, zero means all lines) */
     int  msglevel;      /* message level/serverity (zero means use the letter in the file) */
     int  msgopts;       /* set by xmopen(), sometimes overridden for xmmake() */
-// 56
+/* 56                                                                 */
 
     /* the following are probably not for external use */
     unsigned char *caller;       /* default is getenv("LOGNAME") roughly, msgu */
     unsigned char *prefix;       /* default is applid[0..2]||caller[0..2] */
-    unsigned char *letter;       /* default taken from message file */
-// 80
+    unsigned char *letter;   /* 1st byte is default from message file */
+/* 80                                                                 */
 
     /* the following are filled in by xmopen() not for external use */
     int  msgmax;                /* highest message number in table */
-// possible alignment
+/* possible alignment                                                 */
     unsigned char **msgtable;   /* array of messages (allocated memory) */
     unsigned char *msgdata;     /* messages file content (allocated memory) */
     unsigned char *msgfile;     /* name of message file found (for reference and debugging) */
     unsigned char *escape;      /* the escape character (for reference and debugging) */
-// 120
+/* 120                                                                */
 
     unsigned char  pfxmaj[4];   /* truncated up-cased applid/major */
     unsigned char  pfxmin[4];   /* truncated up-cased caller/minor */
     unsigned char  locale[32];  /* possibly truncated to match the nearest file found */
     unsigned char  applid[32];  /* default is basename of messages file, used as SYSLOG identity */
-// 192
+/* 192                                                                */
 
     int  version;               /* version of the library when struct is initialized */
-// possible alignment
+/* possible alignment                                                 */
     void *next;                 /* pointer to next in chain or NULL */
     void *prev;                 /* pointer to previous in chain (first is NULL) */
-    unsigned char  msgmsgic[16];  /* filled-in with "MSGSTRUCT" when initialized */
-// 232
+    unsigned char  msgmagic[16];  /* filled-in with "MSGSTRUCT" when initialized */
+/* 232                                                                */
 
-  } MSGSTRUCT;
+  } MSGSTRUCT;        /* we will expand this struct for release 2.2.x */
 
 /* Open the messages file, read it, get ready for service. */
 extern int xmopen(unsigned char*,int,struct MSGSTRUCT*);
 /* args: filename, opts, MSGSTRUCT */
-// calls xminit()
-// may call openlog(char*ident,int option,int facility)
+/* calls xminit()                                                     */
+/* may call openlog(char*ident,int option,int facility)               */
 /* Specify a syslog ident via applid in MSGSTRUCT. */
 /* specify a syslog facility via optional MSGSTRUCT */
 
@@ -110,8 +113,8 @@ extern int xmstring(unsigned char*,int,int,int,unsigned char*[],struct MSGSTRUCT
 
 /* Clear the message repository struct. */
 extern int xmclose(struct MSGSTRUCT*);
-// calls xmquit()
-// may call closelog()
+/* calls xmquit()                                                     */
+/* may call closelog()                                                */
 
 /* internal functions */
 extern int xm_lev2pri(unsigned char*);

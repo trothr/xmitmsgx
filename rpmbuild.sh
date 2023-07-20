@@ -15,8 +15,8 @@ RELEASE=`cat .rpmseq`
 STAGING=`pwd`/rpmbuild.d
 
 # I wish the following were not hard-coded
-APPLID=xmitmsgx
-VERSION=2.1.3
+APPLID=$1
+VERSION=$2
 
 # configure the package normally
 ./configure
@@ -45,7 +45,7 @@ RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 cp -p $APPLID-$VERSION-$RELEASE.$UNAMEM.rpm xmitmsgx.rpm
 
 # increment the sequence number for the next build
-expr 3 + 1 > .rpmseq
+expr $RELEASE + 1 > .rpmseq
 
 exit
 

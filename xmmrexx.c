@@ -94,6 +94,7 @@ int rxinit(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
 int rxprint(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {
     int rc, i, j, k, l, msgn, msgc;
+    unsigned
     char buffer[4096], *msgv[32], *p;
     struct MSGSTRUCT *mymsgstruct;
 //printf("xmmrx: PRINT\n");
@@ -143,6 +144,7 @@ int rxprint(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
 int rxstring(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {
     int rc, i, j, k, l, msgn, msgc;
+    unsigned
     char buffer[4096], *msgv[32], *p;
     struct MSGSTRUCT *mymsgstruct;
 //printf("xmmrx: STRING\n");

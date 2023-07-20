@@ -35,6 +35,9 @@ case "$US" in
     CFLAGS="$CFLAGS -fPIC"
 #   LDFLAGS=
     SHFLAGS="$LDFLAGS -shared"
+    if [ "$US" = FreeBSD -a ! -d "$LOCDIR" -a -d /usr/share/nls ] ; then
+                                          LOCDIR=/usr/share/nls ; fi
+    # xmsgtest: size of MSGSTRUCT is 232 bytes (FreeBSD-amd64)
     ;;
   CYGWIN*)
     US="CYGWIN"
@@ -42,13 +45,16 @@ case "$US" in
     ;;
   SunOS|AIX)
     UM=`uname -p`
+    # size of MSGSTRUCT is 172 bytes (SunOS-i386)
+    # size of MSGSTRUCT is 232 bytes (SunOS-x86_64)
     ;;
   OS390)
     UM="s390x" # guessing! since both "s390x" and "s390" are viable
     CC="xlc"
     LDFLAGS="-O -qxplink"
     SHFLAGS="$LDFLAGS -qdll"
-#   LOCDIR=$PREFIX/lib/nls/msg
+    if [ -d /usr/lib/nls/msg ] ; then LOCDIR=/usr/lib/nls/msg ; fi
+    # size of MSGSTRUCT is 172 bytes (amode=31)
     ;;
 esac
 
@@ -58,7 +64,8 @@ esac
 #LOCALE=en_US.UTF-8
 #LOCALE=en_US
 
-SYSTEM="$US-$UM"
+if [ ! -z "$CHICORY_SYSTEM" ] ; then SYSTEM=CHICORY_SYSTEM
+                                else SYSTEM="$US-$UM" ; fi
 
 # create proper makefile from reference input
 cat makefile.in \
@@ -78,8 +85,16 @@ echo "SYSTEM=#$SYSTEM#"  >> xmmconfig.tmp
 echo "LDFLAGS=#$LDFLAGS#" >> xmmconfig.tmp
 echo "SHFLAGS=#$SHFLAGS#" >> xmmconfig.tmp
 echo "LOCDIR=#$LOCDIR#"  >> xmmconfig.tmp
-sed 's/#/"/g' < xmmconfig.tmp > xmmconfig.h
-sed 's/#/"/g' < xmmconfig.tmp > xmmconfig.sh ; chmod a+x xmmconfig.sh
+
+# create a header for C sources
+sed 's/#/"/g' < xmmconfig.tmp \
+  | awk '{print "#define" , $0}' > xmmconfig.h
+#define VERSION not needed
+#define LOCALE not needed
+
+# create a shell resource config file
+sed 's/#/"/g' < xmmconfig.tmp > xmmconfig.sh
+
 rm xmmconfig.tmp
 
 exit

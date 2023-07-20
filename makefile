@@ -4,23 +4,23 @@
 #       Author: Rick Troth, rogue programmer
 #         Date: 2017-Nov-25 (Sat) Thanksgiving 2017 roughly
 #               2023-03-16 (Thu) converted to makefile.in configuration
-#         Note: this makefile configured for Linux-x86_64
+#         Note: this makefile configured for SunOS-i386
 #
 #
 
 APPLID          =       xmitmsgx
-VERSION         =       2.1.3
+VERSION         =       2.1.4
 
-DELIVERABLES    =       xmitmsg xmiterr libxmitmsgx.a libxmitmsgxdyn.so
+DELIVERABLES    =       xmitmsg xmiterr xmmlogin libxmitmsgx.a libxmitmsgxdyn.so
 SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
 LOCALE          =       en_US
 
 ##### configuration #####
 
 PREFIX          =       /usr
-CFLAGS          =        -fPIC -DPREFIX=\"$(PREFIX)\"
+CFLAGS          =        -DPREFIX=\"$(PREFIX)\"
 LDFLAGS         =       
-SHFLAGS         =        -shared
+SHFLAGS         =       
 # we may later use CC, CXX, CPP, CPPFLAGS, and/or CXXFLAGS
 
 ##### configuration #####
@@ -90,6 +90,21 @@ xmiterr.c:
 		@echo "$(MAKE): you need $@"
 		wget $(SOURCEURL)/$@
 
+
+# 'xmmlogin' is a utility program to log an "I have signed on" message
+xmmlogin:       makefile xmmlogin.o xmitmsgx.o
+		$(CC) $(LDFLAGS) -o xmmlogin xmmlogin.o xmitmsgx.o
+
+# object deck for the 'xmmlogin' program
+xmmlogin.o:     makefile xmmlogin.c xmitmsgx.h
+		$(CC) $(CFLAGS) -o xmmlogin.o -c xmmlogin.c
+
+# fetch the source from GitHub
+xmmlogin.c:
+		@echo "$(MAKE): you need $@"
+		wget $(SOURCEURL)/$@
+
+
 # pseudo target to build static and shared libraries
 libraries:  libxmitmsgx.a libxmitmsgxdyn.so
 
@@ -105,7 +120,7 @@ xmsgtest.c:
 		@echo "$(MAKE): you need $@"
 		wget $(SOURCEURL)/$@
 
-
+########################################################################
 # Rexx support
 rexx:           libxmmrexx.so
 
@@ -115,10 +130,50 @@ xmmrexx.o:      makefile xmmrexx.c xmitmsgx.h
 libxmmrexx.so:  xmmrexx.o xmitmsgx.o
 		$(CC) $(LDFLAGS) -shared -o libxmmrexx.so xmmrexx.o xmitmsgx.o
 
+########################################################################
+# Python support
+python:
+		@echo "$(MAKE): support for Python is planned"
 
+########################################################################
+# Java support (JNI)
+java:
+		@echo "$(MAKE): support for Java is planned"
+
+MessageService.class:  MessageService.java
+		javac MessageService.java
+
+#
+# this file is for comparison and discarded once xmmjava.c is up-to-date
+xmmjava.h:	MessageService.class
+		javah com.casita.xmitmsgx.MessageService
+		mv com_casita_xmitmsgx_MessageService.h xmmjava.h
+
+xmmjava.o:	xmmjava.c
+	cc -I. -I/usr/lib/jvm/java-1.8.0-openjdk/include -I/usr/lib/jvm/java-1.8.0-openjdk/include/linux -c xmmjava.c
+
+
+########################################################################
+# COBOL support
+cobol:
+		@echo "$(MAKE): support for COBOL is planned"
+
+########################################################################
+# Tcl support
+tcl:
+		@echo "$(MAKE): support for Tcl is planned"
+
+########################################################################
+# Go/Golang support
+go golang :
+		@echo "$(MAKE): support for Go/Golang is planned"
+
+########################################################################
 # pseudo target to run tests
 tests:		test-xmitmsg test-xmiterr test-xmsgtest
+		@echo ""
 		@echo "$(MAKE): ##### all tests passed, whoop! #####"
+		@echo ""
 
 test-xmitmsg:   xmitmsg
 		./xmitmsg 386
@@ -154,7 +209,9 @@ install:        $(DELIVERABLES) xmitmsgx.msgs errno.msgs
 		cp -p xmitmivp.sh $(PREFIX)/sbin/.
 		cp -p xmitmivp.c $(PREFIX)/src/.
 
-#
+########################################################################
+# RPM support
+
 # http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html
 xmitmsgx.rpm:   xmitmsgx.spec
 #		rpmbuild -bb --nodeps xmitmsgx.spec
@@ -206,9 +263,9 @@ errno.msgs:
 
 # reset things for a fresh build from source
 clean:
-		rm -f *.o *.a *.so *.dylib *.rpm \
-			msgtest xmsgtest xfortune xmiterr xmitmsg \
-			xmitmsgx.spec
+		rm -f *.o *.a *.so *.dylib *.rpm *.class \
+			msgtest xmsgtest xfortune xmiterr xmitmsg xmmlogin \
+			xmitmsgx.spec xmmjava.h
 		rm -rf rpmbuild.d
 
 distclean:      clean

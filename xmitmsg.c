@@ -35,7 +35,7 @@ int main(int argc,char*argv[])
     letter = caller = "";
     ms = &ts;
 
-//  perror("perror()");
+/*  perror("perror()");                                               */
 
     /* parse command options */
     for (n = 1; n < argc && argv[n][0] == '-'; n++)
@@ -88,7 +88,7 @@ int main(int argc,char*argv[])
     ms->caller = caller;
 
     ms->msglevel = 0;             /* zero means set level from letter */
-//  ms->msgopts |= msgopts;
+/*  ms->msgopts |= msgopts;                                           */
 
     rc = xmmake(ms);                              /* make the message */
     if (rc == 814)
@@ -96,7 +96,7 @@ int main(int argc,char*argv[])
         snprintf(buffer,sizeof(buffer),"%d",msgn); msgv[1] = buffer;
         (void) xmprint(814,2,msgv,0,NULL);
         (void) xmclose(NULL); return 1; }
-//  else perror("second");
+/*  else perror("second");                                            */
 
 if (rc == 0)
     rc = printf("%s\n",ms->msgbuf);
