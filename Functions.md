@@ -105,15 +105,15 @@ This is similar to the style of Rexx/Sockets.
 
 Functions in the Rexx interface are:
 
-* RxXmitmsgX("VERSION")
+* `RxXmitmsgX("VERSION")`
 
-* RxXmitmsgX("INIT",library,options)
+* `RxXmitmsgX("INIT",library,options)`
 
-* RxXmitmsgX("PRINT",messageid,arg1,arg2,arg3,...)
+* `RxXmitmsgX("PRINT",messageid,arg1,arg2,arg3,...)`
 
-* RxXmitmsgX("STRING",messageid,arg1,arg2,arg3,...)
+* `RxXmitmsgX("STRING",messageid,arg1,arg2,arg3,...)`
 
-* RxXmitmsgX("QUIT",libobj)
+* `RxXmitmsgX("QUIT",libobj)`
 
 Logically, there is only one Rexx function defined in the interface.
 All Message Handler operations are driven as sub-functions of the one.
@@ -133,16 +133,15 @@ but for most the string is empty and should be ignored.
 
 Methods in the Java interface are:
 
+* method `MessageService.version()`
 
-* method `version()`
+* method `MessageService.init(library,options)`
 
-* method `init(library,options)`
+* method `MessageService.print(messageid,argarray)`
 
-* method `print(messageid,argarray)`
+* method `MessageService.string(messageid,argarray)`
 
-* method `string(messageid,argarray)`
-
-* method `quit(libobj)`
+* method `MessageService.quit(libobj)`
 
 The `version()` method can be called before the message library
 is opened. (That is, before `init()` is called.)
