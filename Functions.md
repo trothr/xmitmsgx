@@ -118,6 +118,13 @@ Functions in the Rexx interface are:
 Logically, there is only one Rexx function defined in the interface.
 All Message Handler operations are driven as sub-functions of the one.
 
+The `VERSION` subfunction can be called before the message library
+is opened. (That is, before `INIT` is called.)
+
+Replacement tokens begin at 1.
+There is no reserved "token zero" like there is with the native interface.
+
+
 
 ## Methods in the Java Interface
 
@@ -136,5 +143,15 @@ Methods in the Java interface are:
 * method `string(messageid,argarray)`
 
 * method `quit(libobj)`
+
+The `version()` method can be called before the message library
+is opened. (That is, before `init()` is called.)
+
+Replacement tokens begin at 1.
+There is no reserved "token zero" like there is with the native interface.
+
+All replacement tokens are passed in a string array.
+
+
 
 
