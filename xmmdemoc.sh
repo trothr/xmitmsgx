@@ -16,11 +16,12 @@ F=/tmp/$$ ; mkdir $F            # a temporary directory
 # work from the temporary directory
 cd $F
 
+#
+# establish some environmentals for building/compiling
 CC=cc
 O=.o
 CFLAGS="-I$E/include"
 LDFLAGS="-lxmitmsgx -L$E/lib"
-
 
 #
 # compile the demo program
@@ -34,12 +35,10 @@ RC=$? ; if [ $RC -ne 0 ] ; then cd $D ; rm -r $F ; exit $RC ; fi
 $CC -o xmmdemoc xmmdemoc$O $LDFLAGS
 RC=$? ; if [ $RC -ne 0 ] ; then cd $D ; rm -r $F ; exit $RC ; fi
 
-
-
-
 #
 # run the compiled program
-cp -p $D/xmitmsgx.msgs . 2> /dev/null
+#cp -p $D/xmitmsgx.msgs . 2> /dev/null
+cp -p $E/share/locale/*/xmitmsgx.msgs . 2> /dev/null
 ./xmmdemoc
 RC=$? ; if [ $RC -ne 0 ] ; then cd $D ; rm -r $F ; exit $RC ; fi
 
@@ -48,23 +47,5 @@ RC=$? ; if [ $RC -ne 0 ] ; then cd $D ; rm -r $F ; exit $RC ; fi
 cd $D ; rm -r $F
 
 exit
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

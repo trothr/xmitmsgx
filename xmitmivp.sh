@@ -10,6 +10,7 @@
 #
 
 cd `dirname "$0"`
+if [ ! -f xmitmivp.c -a -f ../src/xmitmivp.c ] ; then cd ../src ; fi
 
 #LANG=en_US.utf8
 #LANG=en_US

@@ -36,6 +36,8 @@ export LD_LIBRARY_PATH DYLD_LIBRARY_PATH SHLIB_PATH
 if [ -d /usr/opt/regina/bin ] ; then PATH=$PATH:/usr/opt/regina/bin ; fi
 export PATH
 
+#
+# run the sample program
 regina xmmrexx.rx
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 

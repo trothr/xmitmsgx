@@ -4,7 +4,7 @@
 #       Author: Rick Troth, rogue programmer
 #         Date: 2017-Nov-25 (Sat) Thanksgiving 2017 roughly
 #               2023-03-16 (Thu) converted to makefile.in configuration
-#         Note: this makefile configured for SunOS-i386
+#         Note: this makefile configured for Linux-x86_64
 #
 #
 
@@ -18,9 +18,9 @@ LOCALE          =       en_US
 ##### configuration #####
 
 PREFIX          =       /usr
-CFLAGS          =        -DPREFIX=\"$(PREFIX)\"
+CFLAGS          =        -fPIC -DPREFIX=\"$(PREFIX)\"
 LDFLAGS         =       
-SHFLAGS         =       
+SHFLAGS         =        -shared
 # we may later use CC, CXX, CPP, CPPFLAGS, and/or CXXFLAGS
 
 ##### configuration #####
@@ -46,7 +46,7 @@ libxmitmsgx.a:  xmitmsgx.o
 libxmitmsgxdyn.so:  xmitmsgx.o
 #		$(LD) -shared -o $@ $+
 #		$(CC) -shared -o $@ $+
-		$(CC) $(LDFLAGS) -shared -o libxmitmsgxdyn.so xmitmsgx.o
+		$(CC) $(SHFLAGS) -o libxmitmsgxdyn.so xmitmsgx.o
 
 # this object is the library
 xmitmsgx.o:     makefile xmitmsgx.c xmitmsgx.h
@@ -128,7 +128,7 @@ xmmrexx.o:      makefile xmmrexx.c xmitmsgx.h
 		$(CC) $(CFLAGS) -o xmmrexx.o -c xmmrexx.c
 
 libxmmrexx.so:  xmmrexx.o xmitmsgx.o
-		$(CC) $(LDFLAGS) -shared -o libxmmrexx.so xmmrexx.o xmitmsgx.o
+		$(CC) $(SHFLAGS) -o libxmmrexx.so xmmrexx.o xmitmsgx.o
 
 ########################################################################
 # Python support
@@ -137,21 +137,35 @@ python:
 
 ########################################################################
 # Java support (JNI)
-java:
-		@echo "$(MAKE): support for Java is planned"
+java:           libxmmjava.so MessageService.class
+
+#
+# prepare a Java-compatible hierarchy
+com/casita/xmitmsgx:
+	@rm -rf com
+	mkdir -p com
+	ln -s . com/casita
+	ln -s .. com/casita/xmitmsgx
 
 MessageService.class:  MessageService.java
 		javac MessageService.java
 
 #
 # this file is for comparison and discarded once xmmjava.c is up-to-date
-xmmjava.h:	MessageService.class
+xmmjava.h:	MessageService.class com/casita/xmitmsgx
 		javah com.casita.xmitmsgx.MessageService
 		mv com_casita_xmitmsgx_MessageService.h xmmjava.h
 
 xmmjava.o:	xmmjava.c
-	cc -I. -I/usr/lib/jvm/java-1.8.0-openjdk/include -I/usr/lib/jvm/java-1.8.0-openjdk/include/linux -c xmmjava.c
+		$(CC) $(CFLAGS) -I. \
+		  -I/usr/lib/jvm/java-1.8.0-openjdk/include -I/usr/lib/jvm/java-1.8.0-openjdk/include/linux \
+		  -o xmmjava.o -c xmmjava.c
 
+libxmmjava.so:  xmmjava.o xmitmsgx.o
+		$(CC) $(SHFLAGS) -o libxmmjava.so xmmjava.o xmitmsgx.o
+
+com/casita/xmitmsgx/MessageService.class:  com/casita/xmitmsgx/MessageService.java
+	javac com/casita/xmitmsgx/MessageService.java
 
 ########################################################################
 # COBOL support
@@ -203,17 +217,25 @@ install:        $(DELIVERABLES) xmitmsgx.msgs errno.msgs
 		  $(PREFIX)/share/locale/$(LOCALE) $(PREFIX)/sbin $(PREFIX)/src
 		cp -p xmitmsg xmiterr $(PREFIX)/bin/.
 #		cp -p libxmitmsgx.a libxmitmsgxdyn.so $(PREFIX)/lib/.
-		cp -p libxmitmsgx.a *.so $(PREFIX)/lib/.
+#		cp -p libxmitmsgx.a *.so $(PREFIX)/lib/.
+		cp -p *.a *.so $(PREFIX)/lib/.
+		-cp -p *.class $(PREFIX)/lib/.
 		cp -p xmitmsgx.h $(PREFIX)/include/.
 		cp -p xmitmsgx.msgs errno.msgs $(PREFIX)/share/locale/$(LOCALE)/.
 		cp -p xmitmivp.sh $(PREFIX)/sbin/.
 		cp -p xmitmivp.c $(PREFIX)/src/.
+#
+		cp -p xmmdemoc.c xmmdemoc.sh $(PREFIX)/src/.
+		cp -p xmmrexx.rx xmmrexx.sh $(PREFIX)/src/.
+		cp -p MessageDemo.java MessageDemo.sh $(PREFIX)/src/.
+#
 
 ########################################################################
 # RPM support
+rpm:            xmitmsgx.rpm
 
 # http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html
-xmitmsgx.rpm:   xmitmsgx.spec
+xmitmsgx.rpm:
 #		rpmbuild -bb --nodeps xmitmsgx.spec
 		./rpmbuild.sh $(APPLID) $(VERSION)
 
@@ -266,10 +288,10 @@ clean:
 		rm -f *.o *.a *.so *.dylib *.rpm *.class \
 			msgtest xmsgtest xfortune xmiterr xmitmsg xmmlogin \
 			xmitmsgx.spec xmmjava.h
-		rm -rf rpmbuild.d
+		rm -rf rpmbuild.d com
 
 distclean:      clean
-		rm -f xmmconfig.h xmmconfig.sh
+		rm -f xmmconfig.h xmmconfig.sh .rpmseq
 
 veryclean:      distclean
 

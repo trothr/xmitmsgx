@@ -39,7 +39,8 @@ export LD_LIBRARY_PATH
 
 #
 # run the compiled program
-cp -p $D/xmitmsgx.msgs . 2> /dev/null
+#cp -p $D/xmitmsgx.msgs . 2> /dev/null
+cp -p $E/share/locale/*/xmitmsgx.msgs . 2> /dev/null
 java -classpath . MessageDemo
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 

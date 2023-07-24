@@ -2,8 +2,8 @@
  *
  *        Name: xmmrexx.c (C program source)
  *              Rexx (Regina) interface for XMITMSGX package
- *      Author: Rick Troth, rogue programmer
  *        Date: 2023-04-10 (Mon) Choirzilla Studio
+ *    See also: xmmrexx.rx
  *
  * Enable with: Call Rxfuncadd 'xmitmsgx', 'xmmrexx', 'RxXmitmsgX'
  *                              funcname,   library,   entryname
@@ -12,7 +12,7 @@
  *  References: IBM publication SC24-6113
  *
  *  Build with: cc -fPIC -o xmmrexx.o -c xmmrexx.c
- *              cc  -shared -o libxmmrexx.so xmmrexx.o
+ *              cc -shared -o libxmmrexx.so xmmrexx.o
  *
  */
 
@@ -21,12 +21,12 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#define INCL_REXXSAA
-#include <rexxsaa.h>
-
 #include "xmitmsgx.h"
 
 static struct MSGSTRUCT *rxmsgstruct = NULL;
+
+#define INCL_REXXSAA
+#include <rexxsaa.h>
 
 /* ------------------------------------------------------------- VERSION
  * The library version is an integer constant globally readable.
@@ -35,8 +35,10 @@ static struct MSGSTRUCT *rxmsgstruct = NULL;
  */
 int rxversion(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {
+    int xmitmsgx_version = XMITMSGX_VERSION;
+
     /* split the version integer at bytes and reformat for display    */
-    snprintf(rxrets->strptr,rxrets->strlength,"xmitmsgx %d.%d.%d",
+    snprintf(rxrets->strptr,rxrets->strlength,"XMITMSGX version %d.%d.%d",
        (xmitmsgx_version>>24),
       ((xmitmsgx_version>>16)&0xFF),
       ((xmitmsgx_version>>8)&0xFF));

@@ -16,7 +16,9 @@ STAGING=`pwd`/rpmbuild.d
 
 # I wish the following were not hard-coded
 APPLID=$1
+if [ -z "$APPLID" ] ; then echo "missing APPLID - you're doing it wrong" ; exit 1 ; fi
 VERSION=$2
+if [ -z "$VERSION" ] ; then echo "missing VERSION - you're doing it wrong" ; exit 1 ; fi
 
 # configure the package normally
 ./configure
@@ -25,6 +27,8 @@ RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 # build all deliverables
 make all # just short of doing 'make install'
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
+make rexx 2> /dev/null
+make java 2> /dev/null
 
 # override the PREFIX for the install step
 make PREFIX=$STAGING install

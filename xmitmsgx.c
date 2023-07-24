@@ -23,7 +23,11 @@
 #include <libgen.h>
 #include <ctype.h>
 
+#define XMITMSGX_LIBSRC
 #include "xmitmsgx.h"
+
+/* the following needs to be here but not elsewhere so not in header  */
+static int xmitmsgx_version = XMITMSGX_VERSION;
 
 /* These are the locale environment variables we will interrogate:    */
 char *localevars[] = {

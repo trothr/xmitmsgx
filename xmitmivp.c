@@ -7,6 +7,7 @@
  */
 
 #include <stdio.h>
+
 #include <xmitmsgx.h>
 
 int main(int argc,char*argv[])
@@ -17,7 +18,7 @@ int main(int argc,char*argv[])
     ms = &ts;
 
     /* this is taken from the header not actually from the library    */
-    (void) printf("xmitmivp: xmitmsgx version %d.%d.%d\n",
+    (void) printf("xmitmivp: XMITMSGX version %d.%d.%d\n",
       (XMITMSGX_VERSION>>24),(XMITMSGX_VERSION>>16)&0xFF,(XMITMSGX_VERSION>>8)&0xFF);
 
     rc = xmopen("xmitmsgx",0,ms);

@@ -1,15 +1,9 @@
 # XMITMSGX Functions
 
-This page discusses the C functions in the XMITMSGX package.
-XMITMSGX is available for other langauges (Rexx at this time).
-
 The central function in the library is `xmmake()`.
 Other functions are derivatives for convenience and standarization.
-Calling `xmmake()` directly is more tedious and is not recommended.
-In other languages (than C) there is usually no direct interface
-to the `xmmake()` function, so don't worry about it.
 
-## Routines in the Library
+## Routines in the Native Library
 
 * int xmopen(,,)
 
@@ -53,8 +47,8 @@ Return value does not reflect SYSLOG effects or errors.
 `xmprint` takes the following arguments
 
 message number
-count of replacement tokens
-array of replacement tokens
+count of replacement tokens (plus one for the reserved token)
+array of replacement tokens (token zero is reserved)
 options: a bitmask as an integer
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
@@ -69,8 +63,8 @@ Return value does not reflect SYSLOG effects or errors.
 
 file descriptor
 message number
-count of replacement tokens
-array of replacement tokens
+count of replacement tokens (plus one for the reserved token)
+array of replacement tokens (token zero is reserved)
 options: a bitmask as an integer
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
@@ -84,8 +78,8 @@ Returns: number of bytes in string, negative indicates error
 pointer to buffer to hold resulting message string
 size of output buffer
 message number
-count of replacement tokens
-array of replacement tokens
+count of replacement tokens (plus one for the reserved token)
+array of replacement tokens (token zero is reserved)
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 * int xmclose()
@@ -97,5 +91,34 @@ Returns: zero upon successful operation
 `xmclose` takes the following argument
 
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
+
+
+
+
+
+
+
+## Routines in the Rexx Interface
+
+All Rexx calls return a condition code and an optional result string.
+This is similar to the style of Rexx/Sockets.
+
+RxXmitmsgX("VERSION")
+RxXmitmsgX("INIT",library,options)
+RxXmitmsgX("PRINT",messageid,arg1,arg2,arg3,...)
+RxXmitmsgX("STRING",messageid,arg1,arg2,arg3,...)
+RxXmitmsgX("QUIT",libobj)
+
+Logically, there is only one Rexx function defined in the interface.
+All Message Handler operations are driven as sub-functions of the one.
+
+
+## Methods in the Java Interface
+
+* method `version()`
+* method `init(library,options)`
+* method `print(messageid,argarray)`
+* method `string(messageid,argarray)`
+* method `quit(libobj)`
 
 

@@ -37,8 +37,6 @@
 #define  MSGERR_NOLIB     813
 #define  MSGERR_NOMSG     814
 
-static int xmitmsgx_version = XMITMSGX_VERSION;
-
 typedef struct MSGSTRUCT
   {
     int  msgnum;                /* message number */
