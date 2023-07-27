@@ -12,8 +12,8 @@ Returns: zero upon successful operation
 
 `xmopen` takes the following arguments
 
-filename: a pointer to unsigned character string
-options: a bitmask as an integer
+filename: a pointer to unsigned character string <br/>
+options: a bitmask as an integer <br/>
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 You should supply a MSGSTRUCT to represent your message repository.
@@ -34,8 +34,8 @@ While some functions will accept NULL for the MSGSTRUCT pointer,
 xmmake() does not.
 
 You must provide xmmake() with a buffer to hold the message, member
-`msgbuf`, and its length, `msglen`. The latter will be replaced with
-the size of the resulting message.
+`msgbuf`, and its length, member `msglen`. The latter will be replaced
+with the size of the resulting message.
 
 * int xmprint(,,,,)
 
@@ -46,10 +46,10 @@ Return value does not reflect SYSLOG effects or errors.
 
 `xmprint` takes the following arguments
 
-message number
-count of replacement tokens (plus one for the reserved token)
-array of replacement tokens (token zero is reserved)
-options: a bitmask as an integer
+message number <br/>
+count of replacement tokens (plus one for the reserved token) <br/>
+array of replacement tokens (token zero is reserved) <br/>
+options: a bitmask as an integer <br/>
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 * int xmwrite(,,,,,)
@@ -61,11 +61,11 @@ Return value does not reflect SYSLOG effects or errors.
 
 `xmwrite` takes the following arguments
 
-file descriptor
-message number
-count of replacement tokens (plus one for the reserved token)
-array of replacement tokens (token zero is reserved)
-options: a bitmask as an integer
+file descriptor <br/>
+message number <br/>
+count of replacement tokens (plus one for the reserved token) <br/>
+array of replacement tokens (token zero is reserved) <br/>
+options: a bitmask as an integer <br/>
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 * int xmstring(,,,,,)
@@ -75,11 +75,11 @@ Returns: number of bytes in string, negative indicates error
 
 `xmstring` takes the following arguments
 
-pointer to buffer to hold resulting message string
-size of output buffer
-message number
-count of replacement tokens (plus one for the reserved token)
-array of replacement tokens (token zero is reserved)
+pointer to buffer to hold resulting message string <br/>
+size of output buffer <br/>
+message number <br/>
+count of replacement tokens (plus one for the reserved token) <br/>
+array of replacement tokens (token zero is reserved) <br/>
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
 * int xmclose()
@@ -103,22 +103,54 @@ msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 All Rexx calls return a condition code and an optional result string.
 This is similar to the style of Rexx/Sockets.
 
-RxXmitmsgX("VERSION")
-RxXmitmsgX("INIT",library,options)
-RxXmitmsgX("PRINT",messageid,arg1,arg2,arg3,...)
-RxXmitmsgX("STRING",messageid,arg1,arg2,arg3,...)
-RxXmitmsgX("QUIT",libobj)
+Functions in the Rexx interface are:
+
+* `RxXmitmsgX("VERSION")`
+
+* `RxXmitmsgX("INIT",library,options)`
+
+* `RxXmitmsgX("PRINT",messageid,arg1,arg2,arg3,...)`
+
+* `RxXmitmsgX("STRING",messageid,arg1,arg2,arg3,...)`
+
+* `RxXmitmsgX("QUIT",libobj)`
 
 Logically, there is only one Rexx function defined in the interface.
 All Message Handler operations are driven as sub-functions of the one.
 
+The `VERSION` subfunction can be called before the message library
+is opened. (That is, before `INIT` is called.)
+
+Replacement tokens begin at 1.
+There is no reserved "token zero" like there is with the native interface.
+
+
 
 ## Methods in the Java Interface
 
-* method `version()`
-* method `init(library,options)`
-* method `print(messageid,argarray)`
-* method `string(messageid,argarray)`
-* method `quit(libobj)`
+All methods in the Java interface are defined as returning a string,
+but for most the string is empty and should be ignored.
+
+Methods in the Java interface are:
+
+* method `MessageService.version()`
+
+* method `MessageService.init(library,options)`
+
+* method `MessageService.print(messageid,argarray)`
+
+* method `MessageService.string(messageid,argarray)`
+
+* method `MessageService.quit(libobj)`
+
+The `version()` method can be called before the message library
+is opened. (That is, before `init()` is called.)
+
+Replacement tokens begin at 1.
+There is no reserved "token zero" like there is with the native interface.
+
+All replacement tokens are passed in a string array.
+
+
 
 
