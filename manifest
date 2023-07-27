@@ -1,39 +1,39 @@
 
-    manifest                    this file
+    manifest                  + this file
 
-    xmitmsgx.h                  common header for the project           (VRM)
-    xmitmsgx.c                  library of message handling functions
-    xmitmsgx.msgs               a sample message repository
-    makefile                    the build logic, after configuration
-    makefile.in                 the build logic, master file            (VRM)
-    configure                   createse makefile from makefile.in
+    xmitmsgx.h                + common header for the project           (VRM)
+    xmitmsgx.c                + library of message handling functions
+    xmitmsgx.msgs             + a sample message repository
+    makefile                  + the build logic, after configuration
+    makefile.in               + the build logic, master file            (VRM)
+    configure                 + createse makefile from makefile.in
     CMakeLists.txt              for building with CMake, if you must
     build-cmake.sh              for building with CMake
     install.sh                  installation script to help with CMake builds
     rpmbuild.sh                 to create an RPM if you're on a Linux system (VRM)
     xmitmsgx.spec.in            package specification used by RPM
-    xmsgtest.c                  primary test program
-    xmitmsg.c                   utility program to present enumerated messages
-    xmiterr.c                   sample Unix message handler for standard "errno" codes
-    errno.msgs                  message repository for 'xmiterr' program
-    xmmlogin.c                  utility to log "I have signed on"
+    xmsgtest.c                + primary test program
+    xmitmsg.c                 + utility program to present enumerated messages
+    xmiterr.c                 + sample Unix message handler for standard "errno" codes
+    errno.msgs                + message repository for 'xmiterr' program
+    xmmlogin.c                * utility to log "I have signed on"
 
-    README.md                   README for the project in markdown
-    Functions.md                list of functions in the library
-    Members.md                  list of members in the MSGSTRUCT struct
-    SYSLOG.md                   correlation between 'xmitmsg' and SYSLOG
+    README.md                 + README for the project in markdown
+    Functions.md              + list of functions in the library
+    Members.md                + list of members in the MSGSTRUCT struct
+    SYSLOG.md                 + correlation between 'xmitmsg' and SYSLOG
 
     errno.sh                    a utility script to gather errno constants
     xmitmsgx.history            as the name implies
     xmitmsgx.license            as the name implies
 
-    xmitmivp.c                  installation verification program
-    xmitmivp.sh                 installation verification program
+    xmitmivp.c                + installation verification program
+    xmitmivp.sh               + installation verification program
 
     xmmdemoc.c                  demo program in C
     xmmdemoc.sh                 shell script to drive the C demo
 
-    xmmrexx.c                   Rexx interface using Regina Rexx
+    xmmrexx.c                   Rexx interface (built using Regina Rexx, works with ooRexx too)
     xmmrexx.rx                  demo program in Rexx
     xmmrexx.sh                  shell script to drive the Rexx demo
 

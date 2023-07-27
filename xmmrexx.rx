@@ -16,7 +16,7 @@
 Parse Source sys . fn .
 If sys = "CMS" Then nl = '15'x
 Else Do
-  Parse Value Rxfuncadd('xmm','xmmrexx','RxXmitmsgX') With rc rs
+  Parse Value RxFuncAdd('xmm','xmmrexx','RxXmitmsgX') With rc rs
   If rc <> 0 Then Signal LoadFailed
   nl = '0A'x
 End

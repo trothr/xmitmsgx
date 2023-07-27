@@ -9,7 +9,7 @@
 #
 
 APPLID          =       xmitmsgx
-VERSION         =       2.1.4
+VERSION         =       2.1.5
 
 DELIVERABLES    =       xmitmsg xmiterr xmmlogin libxmitmsgx.a libxmitmsgxdyn.so
 SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
@@ -158,8 +158,11 @@ xmmjava.h:	MessageService.class com/casita/xmitmsgx
 
 xmmjava.o:	xmmjava.c
 		$(CC) $(CFLAGS) -I. \
-		  -I/usr/lib/jvm/java-1.8.0-openjdk/include -I/usr/lib/jvm/java-1.8.0-openjdk/include/linux \
+		  -I/usr/lib/jvm/java/include -I/usr/lib/jvm/java/include/linux \
 		  -o xmmjava.o -c xmmjava.c
+#		  -I/usr/lib/jvm/java-1.8.0-openjdk/include -I/usr/lib/jvm/java-1.8.0-openjdk/include/linux
+#		  -I/usr/lib/jvm/java-11-openjdk-11.0.14.1.1-1.el7_9.s390x/include -I/usr/lib/jvm/java-11-openjdk-11.0.14.1.1-1.el7_9.s390x/include/linux
+#		  -I/usr/lib/jvm/java-11/include -I/usr/lib/jvm/java-11/include/linux
 
 libxmmjava.so:  xmmjava.o xmitmsgx.o
 		$(CC) $(SHFLAGS) -o libxmmjava.so xmmjava.o xmitmsgx.o

@@ -16,9 +16,9 @@ STAGING=`pwd`/rpmbuild.d
 
 # I wish the following were not hard-coded
 APPLID=$1
-if [ -z "$APPLID" ] ; then echo "missing APPLID - you're doing it wrong" ; exit 1 ; fi
+if [ -z "$APPLID" ] ; then echo "missing APPLID - you're doing it wrong, drive this from 'make'" ; exit 1 ; fi
 VERSION=$2
-if [ -z "$VERSION" ] ; then echo "missing VERSION - you're doing it wrong" ; exit 1 ; fi
+if [ -z "$VERSION" ] ; then echo "missing VERSION - you're doing it wrong, drive this from 'make'" ; exit 1 ; fi
 
 # configure the package normally
 ./configure

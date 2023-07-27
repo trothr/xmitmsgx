@@ -29,9 +29,10 @@ static struct MSGSTRUCT *rxmsgstruct = NULL;
 #include <rexxsaa.h>
 
 /* ------------------------------------------------------------- VERSION
+ * Arguments: none
+ * Returns: 0, always
+ * Retstr: rc, name of package, version
  * The library version is an integer constant globally readable.
- * Returns: 0 always
- * Retstr: RC 0, name of package, version
  */
 int rxversion(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {
@@ -49,10 +50,10 @@ int rxversion(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   }
 
 /* ---------------------------------------------------------------- INIT
- * Calls: xmopen()
- * Returns: 0 and sets mymsgstruct pointer if no error, else rc from xmopen()
- * Retstr: rc, hex address of mymsgstruct or possible error string
  * Arguments: file, opts (the latter is not presently implemented)
+ * Returns: 0 and sets msgstruct pointer if no error, else rc from xmopen()
+ * Retstr: rc, hex address of msgstruct or possible error string
+ * Calls: xmopen()
  */
 int rxinit(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {
@@ -88,10 +89,10 @@ int rxinit(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   }
 
 /* --------------------------------------------------------------- PRINT
- * Calls: xmprint()
+ * Arguments: message number, replacement tokens
  * Returns: number of characters printed, negative indicates error
  * Retstr: rc, possible error string if error
- * Arguments: message number, replacement tokens
+ * Calls: xmprint()
  */
 int rxprint(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {
@@ -138,10 +139,10 @@ int rxprint(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   }
 
 /* -------------------------------------------------------------- STRING
- * Calls: xmstring()
+ * Arguments: message number, replacement tokens
  * Returns: number of bytes in string, negative indicates error
  * Retstr: rc, formatted message string or possible error string
- * Arguments: message number, replacement tokens
+ * Calls: xmstring()
  */
 int rxstring(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {
@@ -149,7 +150,6 @@ int rxstring(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
     unsigned
     char buffer[4096], *msgv[32], *p;
     struct MSGSTRUCT *mymsgstruct;
-//printf("xmmrx: STRING\n");
 
     mymsgstruct = rxmsgstruct;
 
@@ -160,7 +160,6 @@ int rxstring(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
     rxargv++;  rxargc--;   /* bump count and pointer to next argument */
 
     msgc = 0;
-//printf("xmmrx: %d replacement tokens\n",rxargc);
 
     /* copy all Rexx arguments to local storage so we can null term   */
     k = 0;                            /* k and l for offset and limit */
@@ -179,7 +178,6 @@ int rxstring(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
         rxargv++;  rxargc--;    /* bump count and pointer to next arg */
       }
 
-//printf("xmmrx: %d replacement tokens, string size %d\n",msgc,rxrets->strlength);
     rc = xmstring(rxrets->strptr,rxrets->strlength,msgn,msgc,msgv,mymsgstruct);
     rxrets->strlength = strlen(rxrets->strptr);
 
@@ -187,10 +185,10 @@ int rxstring(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   }
 
 /* ---------------------------------------------------------------- QUIT
+ * Arguments: hex address of msgstruct (not presently implemented)
+ * Returns: 0 and clears msgstruct pointer if no error, else rc from xmclose()
+ * Retstr: rc, hex address of msgstruct or possible error string
  * Calls: xmclose()
- * Returns: 0 and clears mymsgstruct pointer if no error, else rc from xmclose()
- * Retstr: rc, hex address of mymsgstruct or possible error string
- * Arguments: hex address of mymsgstruct (not presently implemented)
  */
 int rxquit(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
   {

@@ -24,21 +24,27 @@ if [ -z "$SHLIB_PATH" ] ; then SHLIB_PATH="$E/lib"
 
 #
 # conditionally add Regina Rexx lodable libraries to the search
-if [ -d /usr/opt/regina/lib ] ; then
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/opt/regina/lib
-    DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/opt/regina/lib
-    SHLIB_PATH=$SHLIB_PATH:/usr/opt/regina/lib
-  fi
+for LD in /usr/opt/regina/lib /usr/opt/regina/lib64 \
+          /usr/opt/oorexx/lib /usr/opt/oorexx/lib64 ; do
+    if [ -d $LD ] ; then
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LD
+        DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$LD
+        SHLIB_PATH=$SHLIB_PATH:$LD
+    fi
+done
 export LD_LIBRARY_PATH DYLD_LIBRARY_PATH SHLIB_PATH
 
 #
 # conditionally augment the command search path
 if [ -d /usr/opt/regina/bin ] ; then PATH=$PATH:/usr/opt/regina/bin ; fi
+if [ -d /usr/opt/oorexx/bin ] ; then PATH=$PATH:/usr/opt/oorexx/bin ; fi
 export PATH
 
 #
 # run the sample program
-regina xmmrexx.rx
+RX=`which regina 2> /dev/null`
+if [ ! -x "$RX" ] ; then RX=rexx ; fi
+$RX xmmrexx.rx
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 
 exit
