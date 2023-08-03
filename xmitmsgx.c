@@ -443,7 +443,8 @@ int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUC
     if (ms->msgopts & MSGFLAG_SYSLOG) syslog(ms->msglevel,"%s",ms->msgbuf);
 
     if (ms->msgopts & MSGFLAG_NOPRINT) ; else
-    if (ms->msglevel > 5)
+//  if (ms->msglevel > 5)
+    if (xm_lev2pri(ms->letter) > 5)
     rc = fprintf(stdout,"%s\n",ms->msgbuf);   /* 5 and 6 are "normal" */
     else                                      /* (and 7 is "debug")   */
     rc = fprintf(stderr,"%s\n",ms->msgbuf);   /* 4, 3, 2, 1 "errors"  */

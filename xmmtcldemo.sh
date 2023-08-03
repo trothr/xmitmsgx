@@ -1,8 +1,7 @@
 #!/bin/sh
 #
-#         Name: xmmrexx.sh (shell script)
-#               demonstrate the message handler called from Java
-#         Date: 2023-07-21 (Fri)
+#         Name: xmmtcldemo.sh (shell script)
+#         Date: 2023-07-27 (Thu)
 #
 
 #
@@ -24,8 +23,7 @@ if [ -z "$SHLIB_PATH" ] ; then SHLIB_PATH="$E/lib"
 
 #
 # conditionally add Regina Rexx lodable libraries to the search
-for LD in /usr/opt/regina/lib /usr/opt/regina/lib64 \
-          /usr/opt/oorexx/lib /usr/opt/oorexx/lib64 ; do
+for LD in /usr/opt/tcl/lib /usr/opt/tcl/lib64 ; do
     if [ -d $LD ] ; then
         LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LD"
         DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$LD"
@@ -36,17 +34,11 @@ export LD_LIBRARY_PATH DYLD_LIBRARY_PATH SHLIB_PATH
 
 #
 # conditionally augment the command search path
-if [ -d /usr/opt/regina/bin ] ; then PATH="$PATH:/usr/opt/regina/bin" ; fi
-if [ -d /usr/opt/oorexx/bin ] ; then PATH="$PATH:/usr/opt/oorexx/bin" ; fi
+if [ -d /usr/opt/tcl/bin ] ; then PATH=$PATH:/usr/opt/tcl/bin ; fi
 export PATH
 
 #
-# run the sample program
-RX=`which regina 2> /dev/null`
-if [ ! -x "$RX" ] ; then RX=rexx ; fi
-$RX xmmrexx.rx
-RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
-
-exit
+# run the demo script under the interpreter (replacing this shell)
+exec tclsh xmmtcldemo.tcl $*
 
 

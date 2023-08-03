@@ -80,6 +80,11 @@ int rxinit(ULONG rxargc, RXSTRING rxargv[],RXSTRING*rxrets)
     if (rc != 0) return rc;
 //printf("xmmrx: INIT worked!\n");
 
+    /* using pfxmaj and pfxmin is definitely outside the XMITMSGX API */
+    strncpy(mymsgstruct->pfxmaj,"XMM",4);
+    strncpy(mymsgstruct->pfxmin,"REX",4);
+    /* this really needs to be changed to allow matching the caller */
+
     /* supply a return string */
     snprintf(rxrets->strptr,rxrets->strlength,"%x",mymsgstruct);
     rxrets->strlength = strlen(rxrets->strptr);

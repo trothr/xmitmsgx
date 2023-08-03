@@ -182,7 +182,7 @@ JNIEXPORT jstring JNICALL Java_com_casita_xmitmsgx_MessageService_quit
       { jclass Exception = (*env)->FindClass(env,"java/lang/Exception");
         (*env)->ThrowNew(env,Exception,"quit method failed"); return NULL; }
 
-    /* convert the supplied Java string to a standard C string for fn */
+    /* convert the supplied Java string to a standard C string for xo */
     xo = (*env)->GetStringUTFChars(env, obj, &iscopy);
 
     /* do an orderly shutdown of the library */

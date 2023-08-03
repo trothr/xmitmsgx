@@ -16,7 +16,7 @@ class MessageDemo
   {
     public static void main(String args[]) throws Exception
       {
-        System.out.println("Message Handler Demonstration program in Java");
+        System.out.println("Message Handler demonstration program in Java");
 
         MessageService MessageService = new MessageService();
 

@@ -22,7 +22,7 @@ Else Do
 End
 
 /* announce ourselves */
-Say "Message Handler Demonstration program in Rexx"
+Say "Message Handler demonstration program in Rexx"
 
 /* the "VERSION" subfunction can be called at any time w/w/o INIT     */
 Parse Value xmm("VERSION") With rc rs

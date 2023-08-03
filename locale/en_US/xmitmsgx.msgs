@@ -42,6 +42,15 @@
 * Logically there is no limit to the number of substitutions, but we
 * only test to 9, and the CMS implementation is formally limited to 20.
 *
+* most of this message catalog is demonstrative, but here are some "for real"
+ 201    I Hello, World!
+ 202    I &1 signing on
+ 203    I success
+ 204    I XMITMSG version &1
+ 205    I Message Handler demonstration program in &1
+*
+ 301    E message handler structure not yet initialized
+ 302    E message handler structure already initialized
  384    E Missing modifier keyword(s).
  386    E Missing operand(s).
  388    E Invalid keyword: &1

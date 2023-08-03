@@ -20,7 +20,7 @@ int main(int argc,char*argv[])
     ms = &ts;
 
     /* announce ourselves */
-    printf("Message Handler Demonstration program in C\n");
+    printf("Message Handler demonstration program in C\n");
 
     /* this is taken from the header not actually from the library    */
     printf("XMITMSGX version %d.%d.%d\n",

@@ -125,6 +125,7 @@ xmsgtest.c:
 rexx:           libxmmrexx.so
 
 xmmrexx.o:      makefile xmmrexx.c xmitmsgx.h
+		@echo "$(MAKE): compiling Tcl support"
 		$(CC) $(CFLAGS) -o xmmrexx.o -c xmmrexx.c
 
 libxmmrexx.so:  xmmrexx.o xmitmsgx.o
@@ -152,11 +153,11 @@ MessageService.class:  MessageService.java
 
 #
 # this file is for comparison and discarded once xmmjava.c is up-to-date
-xmmjava.h:	MessageService.class com/casita/xmitmsgx
+xmmjava.h:      MessageService.class com/casita/xmitmsgx
 		javah com.casita.xmitmsgx.MessageService
 		mv com_casita_xmitmsgx_MessageService.h xmmjava.h
 
-xmmjava.o:	xmmjava.c
+xmmjava.o:      xmmjava.c
 		$(CC) $(CFLAGS) -I. \
 		  -I/usr/lib/jvm/java/include -I/usr/lib/jvm/java/include/linux \
 		  -o xmmjava.o -c xmmjava.c
@@ -177,8 +178,14 @@ cobol:
 
 ########################################################################
 # Tcl support
-tcl:
-		@echo "$(MAKE): support for Tcl is planned"
+tcl:            xmmtcl.so
+
+xmmtcl.o:       makefile xmmtcl.c xmitmsgx.h
+		@echo "$(MAKE): compiling Tcl support"
+		$(CC) $(CFLAGS) -o xmmtcl.o -c xmmtcl.c
+
+xmmtcl.so:      xmmtcl.o xmitmsgx.o
+		$(CC) $(SHFLAGS) -o xmmtcl.so xmmtcl.o xmitmsgx.o
 
 ########################################################################
 # Go/Golang support
