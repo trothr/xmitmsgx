@@ -21,7 +21,7 @@ Else Do
   nl = '0A'x
 End
 
-/* announce ourselves */
+/* announce the sample and language, also message number 205 (below)  */
 Say "Message Handler demonstration program in Rexx"
 
 /* the "VERSION" subfunction can be called at any time w/w/o INIT     */
@@ -46,6 +46,11 @@ If rc <> 0 Then Signal CallFailed
 /* message number 119 only has 9 replaceable tokens so #10 is ignored */
 Parse Value xmm("STRING",119,"#1","#2","#3","#4","#5","#6","#7","#8","#9","#10") with rc rs
 If rs <> "" Then Say rs "(string)"
+If rc <> 0 Then Signal CallFailed
+
+/* as mentioned above, do the sample name thing using the utility */
+Parse Value xmm("PRINT",205,"Rexx") with rc rs
+If rs <> "" Then Say rs
 If rc <> 0 Then Signal CallFailed
 
 /* do an orderly shutdown of the library */

@@ -65,6 +65,14 @@ class MessageDemo
             System.out.println("catch for MessageService.string");
             System.out.println(e.getMessage()); }
 
+        /* as mentioned above, do the sample name thing using the utility */
+        String[] msg2 = { "Java" };
+        try
+          { MessageService.print(205,msg2); }
+        catch (Exception e)
+          { System.out.println(" ");
+            System.out.println("catch for MessageService.print");
+            System.out.println(e.getMessage()); }
 
         String libobj = new String("");
         try

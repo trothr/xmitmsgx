@@ -12,6 +12,10 @@ D=`pwd`                         # the directory where these files reside
 E=`sh -c ' cd .. ; exec pwd '`  # presumed package root (one level up)
 F=/tmp/$$ ; mkdir $F            # a temporary directory
 
+######## DEVELOPMENT ########
+cp -p xmitmsgx.msgs $F/.
+######## DEVELOPMENT ########
+
 #
 # work from the temporary directory
 cd $F
