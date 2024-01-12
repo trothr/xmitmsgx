@@ -9,7 +9,7 @@
 #
 
 APPLID          =       xmitmsgx
-VERSION         =       2.1.5
+VERSION         =       2.1.4
 
 DELIVERABLES    =       xmitmsg xmiterr xmmlogin libxmitmsgx.a libxmitmsgxdyn.so
 SOURCEURL       =       https://raw.githubusercontent.com/trothr/xmitmsgx/master
@@ -32,6 +32,9 @@ _default:	$(DELIVERABLES)
 
 all:		$(DELIVERABLES)
 
+xmmconfig.h:    configure.h
+		cat < configure.h > xmmconfig.h
+
 # this target is an 'ar' archive static library
 libxmitmsgx.a:  xmitmsgx.o
 #	$(LD) -static -o $@ $+
@@ -46,10 +49,10 @@ libxmitmsgx.a:  xmitmsgx.o
 libxmitmsgxdyn.so:  xmitmsgx.o
 #		$(LD) -shared -o $@ $+
 #		$(CC) -shared -o $@ $+
-		$(CC) $(SHFLAGS) -o libxmitmsgxdyn.so xmitmsgx.o
+		$(CC) $(LDFLAGS) -shared -o libxmitmsgxdyn.so xmitmsgx.o
 
 # this object is the library
-xmitmsgx.o:     makefile xmitmsgx.c xmitmsgx.h
+xmitmsgx.o:     makefile xmitmsgx.c xmitmsgx.h xmmconfig.h
 		$(CC) $(CFLAGS) -o xmitmsgx.o -c xmitmsgx.c
 
 # fetch the source from GitHub
@@ -68,7 +71,7 @@ xmitmsg:	makefile xmitmsg.o xmitmsgx.o
 		$(CC) $(LDFLAGS) -o xmitmsg xmitmsg.o xmitmsgx.o
 #		strip xmitmsg
 
-xmitmsg.o:      makefile xmitmsg.c xmitmsgx.h
+xmitmsg.o:      makefile xmitmsg.c xmitmsgx.h xmmconfig.h
 		$(CC) $(CFLAGS) -o xmitmsg.o -c xmitmsg.c
 
 # fetch the source from GitHub
@@ -82,7 +85,7 @@ xmiterr:	makefile xmiterr.o xmitmsgx.o
 		$(CC) $(LDFLAGS) -o xmiterr xmiterr.o xmitmsgx.o
 
 # object deck for the 'xmiterr' program
-xmiterr.o:      makefile xmiterr.c xmitmsgx.h
+xmiterr.o:      makefile xmiterr.c xmitmsgx.h xmmconfig.h
 		$(CC) $(CFLAGS) -o xmiterr.o -c xmiterr.c
 
 # fetch the source from GitHub
@@ -96,7 +99,7 @@ xmmlogin:       makefile xmmlogin.o xmitmsgx.o
 		$(CC) $(LDFLAGS) -o xmmlogin xmmlogin.o xmitmsgx.o
 
 # object deck for the 'xmmlogin' program
-xmmlogin.o:     makefile xmmlogin.c xmitmsgx.h
+xmmlogin.o:     makefile xmmlogin.c xmitmsgx.h xmmconfig.h
 		$(CC) $(CFLAGS) -o xmmlogin.o -c xmmlogin.c
 
 # fetch the source from GitHub
@@ -112,7 +115,7 @@ xmsgtest:	makefile xmsgtest.o xmitmsgx.o
 #		$(CC) -o xmsgtest xmsgtest.o -L. -lxmitmsgx
 		$(CC) $(LDFLAGS) -o xmsgtest xmsgtest.o xmitmsgx.o
 
-xmsgtest.o:     makefile xmsgtest.c xmitmsgx.h
+xmsgtest.o:     makefile xmsgtest.c xmitmsgx.h xmmconfig.h
 		$(CC) $(CFLAGS) -o xmsgtest.o -c xmsgtest.c
 
 # fetch the source from GitHub
@@ -124,12 +127,11 @@ xmsgtest.c:
 # Rexx support
 rexx:           libxmmrexx.so
 
-xmmrexx.o:      makefile xmmrexx.c xmitmsgx.h
-		@echo "$(MAKE): compiling Tcl support"
+xmmrexx.o:      makefile xmmrexx.c xmitmsgx.h xmmconfig.h
 		$(CC) $(CFLAGS) -o xmmrexx.o -c xmmrexx.c
 
 libxmmrexx.so:  xmmrexx.o xmitmsgx.o
-		$(CC) $(SHFLAGS) -o libxmmrexx.so xmmrexx.o xmitmsgx.o
+		$(CC) $(LDFLAGS) -shared -o libxmmrexx.so xmmrexx.o xmitmsgx.o
 
 ########################################################################
 # Python support
@@ -138,38 +140,20 @@ python:
 
 ########################################################################
 # Java support (JNI)
-java:           libxmmjava.so MessageService.class
-
-#
-# prepare a Java-compatible hierarchy
-com/casita/xmitmsgx:
-	@rm -rf com
-	mkdir -p com
-	ln -s . com/casita
-	ln -s .. com/casita/xmitmsgx
+java:
+		@echo "$(MAKE): support for Java is planned"
 
 MessageService.class:  MessageService.java
 		javac MessageService.java
 
 #
 # this file is for comparison and discarded once xmmjava.c is up-to-date
-xmmjava.h:      MessageService.class com/casita/xmitmsgx
+xmmjava.h:	MessageService.class
 		javah com.casita.xmitmsgx.MessageService
 		mv com_casita_xmitmsgx_MessageService.h xmmjava.h
 
-xmmjava.o:      xmmjava.c
-		$(CC) $(CFLAGS) -I. \
-		  -I/usr/lib/jvm/java/include -I/usr/lib/jvm/java/include/linux \
-		  -o xmmjava.o -c xmmjava.c
-#		  -I/usr/lib/jvm/java-1.8.0-openjdk/include -I/usr/lib/jvm/java-1.8.0-openjdk/include/linux
-#		  -I/usr/lib/jvm/java-11-openjdk-11.0.14.1.1-1.el7_9.s390x/include -I/usr/lib/jvm/java-11-openjdk-11.0.14.1.1-1.el7_9.s390x/include/linux
-#		  -I/usr/lib/jvm/java-11/include -I/usr/lib/jvm/java-11/include/linux
-
-libxmmjava.so:  xmmjava.o xmitmsgx.o
-		$(CC) $(SHFLAGS) -o libxmmjava.so xmmjava.o xmitmsgx.o
-
-com/casita/xmitmsgx/MessageService.class:  com/casita/xmitmsgx/MessageService.java
-	javac com/casita/xmitmsgx/MessageService.java
+xmmjava.o:	xmmjava.c
+	cc -I. -I/usr/lib/jvm/java-1.8.0-openjdk/include -I/usr/lib/jvm/java-1.8.0-openjdk/include/linux -c xmmjava.c 
 
 ########################################################################
 # COBOL support
@@ -178,14 +162,8 @@ cobol:
 
 ########################################################################
 # Tcl support
-tcl:            xmmtcl.so
-
-xmmtcl.o:       makefile xmmtcl.c xmitmsgx.h
-		@echo "$(MAKE): compiling Tcl support"
-		$(CC) $(CFLAGS) -o xmmtcl.o -c xmmtcl.c
-
-xmmtcl.so:      xmmtcl.o xmitmsgx.o
-		$(CC) $(SHFLAGS) -o xmmtcl.so xmmtcl.o xmitmsgx.o
+tcl:
+		@echo "$(MAKE): support for Tcl is planned"
 
 ########################################################################
 # Go/Golang support
@@ -195,9 +173,7 @@ go golang :
 ########################################################################
 # pseudo target to run tests
 tests:		test-xmitmsg test-xmiterr test-xmsgtest
-		@echo ""
 		@echo "$(MAKE): ##### all tests passed, whoop! #####"
-		@echo ""
 
 test-xmitmsg:   xmitmsg
 		./xmitmsg 386
@@ -227,25 +203,17 @@ install:        $(DELIVERABLES) xmitmsgx.msgs errno.msgs
 		  $(PREFIX)/share/locale/$(LOCALE) $(PREFIX)/sbin $(PREFIX)/src
 		cp -p xmitmsg xmiterr $(PREFIX)/bin/.
 #		cp -p libxmitmsgx.a libxmitmsgxdyn.so $(PREFIX)/lib/.
-#		cp -p libxmitmsgx.a *.so $(PREFIX)/lib/.
-		cp -p *.a *.so $(PREFIX)/lib/.
-		-cp -p *.class $(PREFIX)/lib/.
+		cp -p libxmitmsgx.a *.so $(PREFIX)/lib/.
 		cp -p xmitmsgx.h $(PREFIX)/include/.
 		cp -p xmitmsgx.msgs errno.msgs $(PREFIX)/share/locale/$(LOCALE)/.
 		cp -p xmitmivp.sh $(PREFIX)/sbin/.
 		cp -p xmitmivp.c $(PREFIX)/src/.
-#
-		cp -p xmmdemoc.c xmmdemoc.sh $(PREFIX)/src/.
-		cp -p xmmrexx.rx xmmrexx.sh $(PREFIX)/src/.
-		cp -p MessageDemo.java MessageDemo.sh $(PREFIX)/src/.
-#
 
 ########################################################################
 # RPM support
-rpm:            xmitmsgx.rpm
 
 # http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html
-xmitmsgx.rpm:
+xmitmsgx.rpm:   xmitmsgx.spec
 #		rpmbuild -bb --nodeps xmitmsgx.spec
 		./rpmbuild.sh $(APPLID) $(VERSION)
 
@@ -298,10 +266,10 @@ clean:
 		rm -f *.o *.a *.so *.dylib *.rpm *.class \
 			msgtest xmsgtest xfortune xmiterr xmitmsg xmmlogin \
 			xmitmsgx.spec xmmjava.h
-		rm -rf rpmbuild.d com
+		rm -rf rpmbuild.d
 
 distclean:      clean
-		rm -f xmmconfig.h xmmconfig.sh .rpmseq
+		rm -f xmmconfig.h xmmconfig.sh
 
 veryclean:      distclean
 

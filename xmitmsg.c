@@ -19,6 +19,7 @@
 #define MSGMAX 16
 
 #include "xmitmsgx.h"
+char *xmmprefix = PREFIX; /* installation prefix not application prefix */
 
 /* development */
 #include <stdio.h>

@@ -23,11 +23,9 @@
 #include <libgen.h>
 #include <ctype.h>
 
-#define XMITMSGX_LIBSRC
 #include "xmitmsgx.h"
 
-/* the following needs to be here but not elsewhere so not in header  */
-static int xmitmsgx_version = XMITMSGX_VERSION;
+extern char *xmmprefix; /* installation prefix not application prefix */
 
 /* These are the locale environment variables we will interrogate:    */
 char *localevars[] = {
@@ -146,7 +144,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
             (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
 
             (void) snprintf(filename,sizeof(filename)-1,
-                "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+                "%s/share/locale/%s/%s.msgs",xmmprefix,ms->locale,file);
             rc = stat(filename,&statbuf);
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
@@ -171,7 +169,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
                 if (*p != 0x00) { *p = 0x00;
 
             (void) snprintf(filename,sizeof(filename)-1,
-                "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+                "%s/share/locale/%s/%s.msgs",xmmprefix,ms->locale,file);
             rc = stat(filename,&statbuf);
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
@@ -200,7 +198,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
             (void) strncpy(ms->locale,locale,sizeof(ms->locale)-1);
 
             (void) snprintf(filename,sizeof(filename)-1,
-                "%s/share/locale/%s/%s.msgs",PREFIX,ms->locale,file);
+                "%s/share/locale/%s/%s.msgs",xmmprefix,ms->locale,file);
             rc = stat(filename,&statbuf);
             if (rc != 0) {
             (void) snprintf(filename,sizeof(filename)-1,
@@ -301,7 +299,7 @@ int xmopen(unsigned char*file,int opts,struct MSGSTRUCT*ms)
 
     /* establish major and minor prefix area */
     /* if (ms->prefix == NULL || *ms->prefix == 0x00) */ ms->prefix = ms->applid;
-    p = ms->prefix;
+    p = ms->prefix;     /* application prefix not installation prefix */
     for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmaj[i] = toupper((int)*p++);
     ms->pfxmaj[i] = 0x00;
     for (i = 0; i < 3 && *p != 0x00; i++) ms->pfxmin[i] = toupper((int)*p++);
@@ -443,8 +441,7 @@ int xmprint(int msgnum,int msgc,unsigned char*msgv[],int msgopts,struct MSGSTRUC
     if (ms->msgopts & MSGFLAG_SYSLOG) syslog(ms->msglevel,"%s",ms->msgbuf);
 
     if (ms->msgopts & MSGFLAG_NOPRINT) ; else
-//  if (ms->msglevel > 5)
-    if (xm_lev2pri(ms->letter) > 5)
+    if (ms->msglevel > 5)
     rc = fprintf(stdout,"%s\n",ms->msgbuf);   /* 5 and 6 are "normal" */
     else                                      /* (and 7 is "debug")   */
     rc = fprintf(stderr,"%s\n",ms->msgbuf);   /* 4, 3, 2, 1 "errors"  */

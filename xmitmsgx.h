@@ -11,8 +11,8 @@
 #ifndef _XMITMSGX_H
 #define _XMITMSGX_H
 
-/* xmitmsgx-2.1.6            v2            r1            m6           */
-#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((6) << 8))
+/* xmitmsgx-2.1.5            v2            r1            m5           */
+#define  XMITMSGX_VERSION  (((2) << 24) + ((1) << 16) + ((5) << 8) + (0))
 
 /* priorities (these are ordered)                                     */
 /*      MSGLEVEL_DEBUG           LOG_DEBUG   7 debug-level messages, not used here */
@@ -31,11 +31,10 @@
 #define  MSGFLAG_NOPRINT  0x08   /* implies log only */
 /* what about time stamp? logging automtically has time stamping */
 
-#define  MSGFLAG_CODELEFT  0x10  /* default */
-#define  MSGFLAG_CODERIGHT  0x20  /* think Hebrew */
-
 #define  MSGERR_NOLIB     813
 #define  MSGERR_NOMSG     814
+
+static int xmitmsgx_version = XMITMSGX_VERSION;
 
 typedef struct MSGSTRUCT
   {
@@ -59,7 +58,7 @@ typedef struct MSGSTRUCT
     /* the following are probably not for external use */
     unsigned char *caller;       /* default is getenv("LOGNAME") roughly, msgu */
     unsigned char *prefix;       /* default is applid[0..2]||caller[0..2] */
-    unsigned char *letter;   /* 1st byte is default from message file */
+    unsigned char *letter;       /* default taken from message file */
 /* 80                                                                 */
 
     /* the following are filled in by xmopen() not for external use */

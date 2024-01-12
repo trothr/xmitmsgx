@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include "xmitmsgx.h"
+char *xmmprefix = PREFIX; /* installation prefix not application prefix */
 
 /**********************************************************************/
 int main(int argc,char*argv[])
