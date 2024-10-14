@@ -61,6 +61,8 @@
  405    E Invalid or missing message number
  408    E Number of substitutions exceeds 20
 *
+ 514    E Return code &1 from &2
+*
  766    I Substitution character is &1
  767    I Number of message number characters to display is &1
  768    W Invalid substitution character value &1
