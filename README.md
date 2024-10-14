@@ -7,6 +7,12 @@ rather than CMS syntax (positional args, open paren, then options).
 The message file source format is the same as that of CMS except it
 does not have to be pre-processed.
 
+NOTE: <br/>
+The home for this project has moved to https://github.com/trothtech/xmm/
+
+The source archive and related artifacts, such as the PGP siguatnre,
+can be downloaded from http://www.casita.net/pub/xmm/
+
 ## Rationale
 
 Application messages in context can be referenced by number.
