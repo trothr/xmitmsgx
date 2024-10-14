@@ -1,53 +1,51 @@
 
     manifest                    this file
-
-    xmitmsgx.h                  common header for the project           (VRM)
-    xmitmsgx.c                  library of message handling functions
-    xmitmsgx.msgs               a sample message repository
-    makefile                    the build logic, after configuration
-    makefile.in                 the build logic, master file            (VRM)
-    configure                   createse makefile from makefile.in
-    rpmbuild.sh                 to create an RPM (SUSE or RedHat based systems)
-    xmitmsgx.spec.in            package specification used by RPM
-    xmsgtest.c                  primary test program
-    xmitmsg.c                   utility program to present enumerated messages
-    xmiterr.c                   sample Unix message handler for standard "errno" codes
-    errno.msgs                  message repository for 'xmiterr' program
-    xmmlogin.c                  utility to log "I have signed on"
-
     README.md                   README for the project in markdown
     Functions.md                list of functions in the library
     Members.md                  list of members in the MSGSTRUCT struct
     SYSLOG.md                   correlation between 'xmitmsg' and SYSLOG
 
+    src/xmitmsgx.h              common header for the project           (VRM)
+    src/xmitmsgx.c              library of message handling functions
+    src/xmitmsgx.msgs           a sample message repository
+    src/makefile.in             the build logic, master file            (VRM)
+    src/configure               createse makefile from makefile.in
+    src/rpmbuild.sh             to create an RPM (SUSE or RedHat based systems)
+    src/xmitmsgx.spec.in        package specification used by RPM
+        xmsgtest.c              primary test program
+    src/xmitmsg.c               utility program to present enumerated messages
+    src/xmiterr.c               sample Unix message handler for standard "errno" codes
+    src/errno.msgs              message repository for 'xmiterr' program
+    src/xmmlogin.c              utility to log "I have signed on"
+
     locale/en_US/xmitmsgx.msgs  standard locale layout
     locale/en_US/errno.msgs     standard locale layout
+
+    src/xmitmivp.c              installation verification program
+    src/xmitmivp.sh             installation verification program
+
+    src/xmmdemoc.c              demo program in C
+    src/xmmdemoc.sh             shell script to drive the C demo
+
+    src/xmmrexx.c               Rexx interface (built using Regina Rexx, works with ooRexx too)
+    src/xmmrexx.rx              demo program in Rexx
+    src/xmmrexx.sh              shell script to drive the Rexx demo
 
     errno.sh                    a utility script to gather errno constants
     xmitmsgx.history            as the name implies
     xmitmsgx.license            as the name implies
 
-    CMakeLists.txt              for building with CMake, if you must
-    build-cmake.sh              for building with CMake
-    install.sh                  installation script to help with CMake builds
+        xmmjava.c               Java interface - JNI shim
+        MessageService.java     Java interface - support class
+        MessageDemo.java        demo program in Java
+        MessageDemo.sh          shell script to drive the Java demo
 
-    xmitmivp.c                  installation verification program
-    xmitmivp.sh                 installation verification program
+        xmmtcl.c                Tcl interface
+        xmmtcldemo.tcl          demo program in Tcl
+        xmmtcldemo.sh           shell script to drive the Tcl demo
 
-    xmmdemoc.c                  demo program in C
-    xmmdemoc.sh                 shell script to drive the C demo
-
-    xmmrexx.c                   Rexx interface (built using Regina Rexx, works with ooRexx too)
-    xmmrexx.rx                  demo program in Rexx
-    xmmrexx.sh                  shell script to drive the Rexx demo
-
-    xmmjava.c                   Java interface - JNI shim
-    MessageService.java         Java interface - support class
-    MessageDemo.java            demo program in Java
-    MessageDemo.sh              shell script to drive the Java demo
-
-    xmmtcl.c                    Tcl interface
-    xmmtcldemo.tcl              demo program in Tcl
-    xmmtcldemo.sh               shell script to drive the Tcl demo
+        CMakeLists.txt          for building with CMake, if you must
+        build-cmake.sh          for building with CMake
+        install.sh              installation script to help with CMake builds
 
 
