@@ -1,7 +1,7 @@
 # SYSLOG Correlation
 
-CMS 'XMITMSG' and in turn this "xmitmsgx" project uses severity levels.
-These align nicely with SYSLOG priorities.
+CMS 'XMITMSG' and in turn this "xmitmsgx" project (henceforth "xmm")
+uses severity levels. These align nicely with SYSLOG priorities.
 
 ## IBM versus Unix
 
@@ -23,7 +23,7 @@ Here is a correlation between IBM severities and Unix SYSLOG levels.
     Code    Type            mnemonic        priority
     -       -               LOG_DEBUG       7 = debugging
     I       Information     LOG_INFO        6 = general info
-    R       Response        LOG_NOTICE      5 = requires special handling
+    R       Response        LOG_NOTICE      5 = requires special handling (response needed)
     W       Warning         LOG_WARNING     4 = a warning
     E       Error           LOG_ERR         3 = an error
     S       Sever           LOG_CRIT        2 = a critical condition
@@ -32,13 +32,13 @@ Here is a correlation between IBM severities and Unix SYSLOG levels.
 
 ## SYSLOG
 
-The `xmitmsgx` project library can optionally drive `syslog()`.
-When calling `syslog()`, the library derives the SYSLOG priority
+The `xmm` project library can optionally drive `syslog()`.
+When calling `syslog()`, the library determines the SYSLOG priority
 from the severity level of the message.
 
 SYSLOG priorities are listed in the table above.
 SYSLOG facilities do not necessarily align and can be specified
-when initializing the `xmitmsgx` library.
+when initializing the `xmm` library.
 
 ## References
 

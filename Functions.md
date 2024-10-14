@@ -5,6 +5,8 @@ Other functions are derivatives for convenience and standarization.
 
 ## Routines in the Native Library
 
+The native interface is defined in C terms.
+
 * int xmopen(,,)
 
 Open the messages file, read it, get ready for service.
@@ -12,9 +14,9 @@ Returns: zero upon successful operation
 
 `xmopen` takes the following arguments
 
-filename: a pointer to unsigned character string <br/>
+filename: a pointer to a character string <br/>
 options: a bitmask as an integer <br/>
-msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
+msgstruct: a pointer to MSGSTRUCT or NULL (using NULL is not thread safe)
 
 You should supply a MSGSTRUCT to represent your message repository.
 If you supply NULL then xmopen() will attempt to use a global static
@@ -92,12 +94,6 @@ Returns: zero upon successful operation
 
 msgstruct: a pointer to MSGSTRUCT or NULL (NULL is not thread safe)
 
-
-
-
-
-
-
 ## Routines in the Rexx Interface
 
 All Rexx calls return a condition code and an optional result string.
@@ -124,8 +120,6 @@ is opened. (That is, before `INIT` is called.)
 Replacement tokens begin at 1.
 There is no reserved "token zero" like there is with the native interface.
 
-
-
 ## Methods in the Java Interface
 
 All methods in the Java interface are defined as returning a string,
@@ -150,7 +144,5 @@ Replacement tokens begin at 1.
 There is no reserved "token zero" like there is with the native interface.
 
 All replacement tokens are passed in a string array.
-
-
 
 

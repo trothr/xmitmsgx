@@ -1,6 +1,6 @@
 # MSGSTRUCT Members
 
-The central function in the library is `xmmake()`
+The central function in the XMM library is `xmmake()`
 and the anchor for its operation is MSGSTRUCT.
 
 The MSGSTRUCT must be initialized by calling `xmopen()`
