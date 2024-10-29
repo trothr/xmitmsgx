@@ -10,7 +10,7 @@ does not have to be pre-processed.
 NOTE: <br/>
 The home for this project has moved to https://github.com/trothtech/xmm/
 
-The source archive and related artifacts, such as the PGP siguatnre,
+The source archive and related artifacts, such as the PGP signature,
 can be downloaded from http://www.casita.net/pub/xmm/
 
 ## Rationale
