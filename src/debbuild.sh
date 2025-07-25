@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#         Name: rpmbuild.sh (shell script)
-#               build an RPM from the "spec file"
-#         Date: 2023-03-22 (Wed)
-#
+#         Name: debbuild.sh (shell script)
+#               build a .deb package file from Debian "control" hierarchy
+#         Date: 2025-07-14 (Mon)
+#     See also: rpmbuild.sh script in this package
 #
 
 #PREFIX                 # set from $STAGING
@@ -17,22 +17,22 @@ cd `dirname "$0"`
 
 # two arguments from the makefile
 APPLID="$1"
-if [ -z "$APPLID" ] ; then echo "rpmbuild: missing APPLID"
-    echo "rpmbuild: you're doing it wrong, drive this from 'make'"
+if [ -z "$APPLID" ] ; then echo "debbuild: missing APPLID"
+    echo "debbuild: you're doing it wrong, drive this from 'make'"
     exit 1 ; fi
 VERSION="$2"
-if [ -z "$VERSION" ] ; then echo "rpmbuild: missing VERSION"
-    echo "rpmbuild: you're doing it wrong, drive this from 'make'"
+if [ -z "$VERSION" ] ; then echo "rdebbuild missing VERSION"
+    echo "debbuild: you're doing it wrong, drive this from 'make'"
     exit 1 ; fi
 
-STAGING=`pwd`/rpmbuild.d
+STAGING=`pwd`/debbuild.d
 
 # establish certain variables
 UNAMEM=`uname -m | sed 's#^i.86$#i386#' | sed 's#^armv.l$#arm#'`
-# RPM fixups
-if [ ! -s .rpmseq ] ; then echo "0" > .rpmseq ; fi
-RELEASE=`cat .rpmseq`
-export UNAMEM STAGING RELEASE
+# Debian fixups
+if [ "$UNAMEM" = "x86_64" ] ; then UNAMEM=amd64 ; fi
+
+export UNAMEM STAGING
 
 #
 # we're moving more settings into the config artifacts
@@ -41,9 +41,9 @@ export UNAMEM STAGING RELEASE
 if [ -z "$MAKE" ] ; then MAKE=make ; fi
 
 #
-# process the skeletal spec file into a usable RPM spec file
-rm -f $APPLID.spec
-$MAKE STAGING=$STAGING UNAMEM=$UNAMEM RELEASE=$RELEASE $APPLID.spec
+# process the skeletal dctl file into a usable Debian control file
+rm -f $APPLID.dctl
+$MAKE STAGING=$STAGING UNAMEM=$UNAMEM RELEASE=$RELEASE $APPLID.dctl
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 
 #
@@ -51,7 +51,7 @@ RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 ./configure # --prefix=$PREFIX
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 
-# 
+#
 # 'just make' - build all deliverables
 $MAKE all # just short of doing 'make install'
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
@@ -80,19 +80,38 @@ if [ -d $STAGING/src ] ; then
 fi
 
 #
-# dump the heavy lifting on the 'rpmbuild' command
-rpmbuild -bb --nodeps $APPLID.spec
+# move the control file into place
+mkdir $STAGING/DEBIAN
+RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
+cp -p $APPLID.dctl $STAGING/DEBIAN/control
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
 
 #
-# recover the resulting package file ... yay!
-mv $HOME/rpmbuild/RPMS/$UNAMEM/$APPLID-$VERSION-$RELEASE.$UNAMEM.rpm .
+# build the DEB file (and keep a log of the process)
+rm -f $APPLID.deb.log
+echo "+ dpkg-deb --build debbuild.d"
+        dpkg-deb --build debbuild.d 2>&1 | tee $APPLID.deb.log
 RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
-cp -p $APPLID-$VERSION-$RELEASE.$UNAMEM.rpm $APPLID.rpm
 
-# increment the sequence number for the next build
-expr $RELEASE + 1 > .rpmseq
+#
+# recover the  resulting package file ... yay!
+mv debbuild.d.deb $APPLID-$VERSION-$UNAMEM.deb
+RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
+cp -p $APPLID-$VERSION-$UNAMEM.deb $APPLID.deb
+RC=$? ; if [ $RC -ne 0 ] ; then exit $RC ; fi
+
+#
+# remove temporary build directory
+rm -r $STAGING
 
 exit
+
+########################################################################
+
+#
+# clean up from any prior run
+$MAKE clean 1> /dev/null 2> /dev/null
+rm -rf $STAGING
+#find . -print | grep ';' | xargs -r rm
 
 
